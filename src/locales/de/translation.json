@@ -1,0 +1,41 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "transactions": "Transaktionen",
+    "analytics": "Analysen",
+    "insights": "Einblicke",
+    "settings": "Einstellungen"
+  },
+  "dashboard": {
+    "systemDynamics": "Systemdynamik",
+    "coreMetrics": "Hochleistungs-Finanzkern v4.0",
+    "reports": "Berichte",
+    "image": "Bild",
+    "pdf": "PDF",
+    "capitalReservoir": "Kapitalreserve",
+    "inflowVelocity": "Zuflussgeschwindigkeit",
+    "burnCoefficient": "Verbrennungskoeffizient",
+    "retentionYield": "Rendite",
+    "activeLiquidity": "Aktive Liquidität",
+    "realtimeBalance": "Echtzeit-Saldo-Fluss",
+    "flow": "FLUSS",
+    "burn": "VERBRENNEN",
+    "capitalMap": "Kapitalkarte",
+    "portfolio": "Portfolio",
+    "realtimeFeed": "Echtzeit-Feed",
+    "viewAll": "Alle ansehen"
+  },
+  "categories": {
+    "food": "Essen",
+    "Rent": "Miete",
+    "travel": "Reisen",
+    "subscriptions": "Abonnements",
+    "others": "Andere",
+    "income": "Einkommen"
+  },
+  "topbar": {
+    "search": "Suchen...",
+    "admin": "Admin",
+    "viewer": "Zuschauer"
+  }
+}

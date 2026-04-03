@@ -1,0 +1,41 @@
+{
+  "sidebar": {
+    "dashboard": "Главная",
+    "transactions": "Транзакции",
+    "analytics": "Аналитика",
+    "insights": "Инсайты",
+    "settings": "Настройки"
+  },
+  "dashboard": {
+    "systemDynamics": "Системная динамика",
+    "coreMetrics": "Ядро финансов высокой производительности v4.0",
+    "reports": "Отчеты",
+    "image": "Изображение",
+    "pdf": "PDF",
+    "capitalReservoir": "Капитальный резерв",
+    "inflowVelocity": "Скорость притока",
+    "burnCoefficient": "Коэффициент сжигания",
+    "retentionYield": "Доходность удержания",
+    "activeLiquidity": "Активная ликвидность",
+    "realtimeBalance": "Поток баланса в реальном времени",
+    "flow": "ПОТОК",
+    "burn": "СЖИГАНИЕ",
+    "capitalMap": "Карта капитала",
+    "portfolio": "Портфель",
+    "realtimeFeed": "Лента событий",
+    "viewAll": "Смотреть все"
+  },
+  "categories": {
+    "food": "Еда",
+    "Rent": "Аренда",
+    "travel": "Путешествия",
+    "subscriptions": "Подписки",
+    "others": "Другое",
+    "income": "Доход"
+  },
+  "topbar": {
+    "search": "Поиск...",
+    "admin": "Админ",
+    "viewer": "Зритель"
+  }
+}

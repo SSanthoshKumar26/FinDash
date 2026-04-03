@@ -1,0 +1,41 @@
+{
+  "sidebar": {
+    "dashboard": "仪表板",
+    "transactions": "交易",
+    "analytics": "分析",
+    "insights": "洞察",
+    "settings": "设置"
+  },
+  "dashboard": {
+    "systemDynamics": "系统动态",
+    "coreMetrics": "高性能财务核心 v4.0",
+    "reports": "报告",
+    "image": "图片",
+    "pdf": "PDF",
+    "capitalReservoir": "资本储备",
+    "inflowVelocity": "流入速度",
+    "burnCoefficient": "燃烧系数",
+    "retentionYield": "留存收益",
+    "activeLiquidity": "活跃流动性",
+    "realtimeBalance": "实时余额流量",
+    "flow": "流动",
+    "burn": "消耗",
+    "capitalMap": "资本图",
+    "portfolio": "投资组合",
+    "realtimeFeed": "实时动态",
+    "viewAll": "查看全部"
+  },
+  "categories": {
+    "food": "餐饮",
+    "Rent": "租金",
+    "travel": "旅行",
+    "subscriptions": "订阅",
+    "others": "其他",
+    "income": "收入"
+  },
+  "topbar": {
+    "search": "搜索...",
+    "admin": "管理员",
+    "viewer": "访客"
+  }
+}

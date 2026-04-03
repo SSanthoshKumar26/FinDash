@@ -1,0 +1,41 @@
+{
+  "sidebar": {
+    "dashboard": "لوحة القيادة",
+    "transactions": "المعاملات",
+    "analytics": "التحليلات",
+    "insights": "رؤى",
+    "settings": "إعدادات"
+  },
+  "dashboard": {
+    "systemDynamics": "ديناميكيات النظام",
+    "coreMetrics": "النواة المالية عالية الأداء الإصدار 4.0",
+    "reports": "تقارير",
+    "image": "صورة",
+    "pdf": "بي دي إف",
+    "capitalReservoir": "احتياطي رأس المال",
+    "inflowVelocity": "سرعة التدفق",
+    "burnCoefficient": "معامل الحرق",
+    "retentionYield": "عائد الاحتفاظ",
+    "activeLiquidity": "السيولة النشطة",
+    "realtimeBalance": "تدفق الرصيد في الوقت الحقيقي",
+    "flow": "تدفق",
+    "burn": "حرق",
+    "capitalMap": "خريطة رأس المال",
+    "portfolio": "محفظة",
+    "realtimeFeed": "تغذية حية",
+    "viewAll": "عرض الكل"
+  },
+  "categories": {
+    "food": "طعام",
+    "Rent": "إيجار",
+    "travel": "سفر",
+    "subscriptions": "اشتراكات",
+    "others": "أخرى",
+    "income": "دخل"
+  },
+  "topbar": {
+    "search": "يبحث...",
+    "admin": "مسؤول",
+    "viewer": "مشاهد"
+  }
+}

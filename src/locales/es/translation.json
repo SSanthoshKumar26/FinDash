@@ -1,0 +1,41 @@
+{
+  "sidebar": {
+    "dashboard": "Panel",
+    "transactions": "Transacciones",
+    "analytics": "Analítica",
+    "insights": "Perspectivas",
+    "settings": "Configuración"
+  },
+  "dashboard": {
+    "systemDynamics": "Dinámica del sistema",
+    "coreMetrics": "Núcleo financiero de alto rendimiento v4.0",
+    "reports": "Informes",
+    "image": "Imagen",
+    "pdf": "PDF",
+    "capitalReservoir": "Reserva de capital",
+    "inflowVelocity": "Velocidad de entrada",
+    "burnCoefficient": "Coeficiente de quema",
+    "retentionYield": "Rendimiento de retención",
+    "activeLiquidity": "Liquidez activa",
+    "realtimeBalance": "Flujo de saldo en tiempo real",
+    "flow": "FLUJO",
+    "burn": "QUEMA",
+    "capitalMap": "Mapa de capital",
+    "portfolio": "Portafolio",
+    "realtimeFeed": "Feed en tiempo real",
+    "viewAll": "Ver todo"
+  },
+  "categories": {
+    "food": "Comida",
+    "Rent": "Alquiler",
+    "travel": "Viaje",
+    "subscriptions": "Suscripciones",
+    "others": "Otros",
+    "income": "Ingresos"
+  },
+  "topbar": {
+    "search": "Buscar...",
+    "admin": "Administrador",
+    "viewer": "Espectador"
+  }
+}

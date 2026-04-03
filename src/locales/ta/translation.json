@@ -1,0 +1,41 @@
+{
+  "sidebar": {
+    "dashboard": "கட்டுப்பாட்டு அறை",
+    "transactions": "பரிவர்த்தனைகள்",
+    "analytics": "பகுப்பாய்வு",
+    "insights": "நுண்ணறிவு",
+    "settings": "அமைப்புகள்"
+  },
+  "dashboard": {
+    "systemDynamics": "அமைப்பு இயக்கவியல்",
+    "coreMetrics": "அதிக செயல்திறன் நிதி தளம் v4.0",
+    "reports": "அறிக்கைகள்",
+    "image": "படம்",
+    "pdf": "PDF",
+    "capitalReservoir": "மூலதன இருப்பு",
+    "inflowVelocity": "உள்வரும் வேகம்",
+    "burnCoefficient": "எரியும் குணகம்",
+    "retentionYield": "தக்கவைப்பு மகசூல்",
+    "activeLiquidity": "செயலில் உள்ள பணப்புழக்கம்",
+    "realtimeBalance": "நிகழ்நேர இருப்பு ஓட்டம்",
+    "flow": "ஓட்டம்",
+    "burn": "எரி",
+    "capitalMap": "மூலதன வரைபடம்",
+    "portfolio": "முதலீட்டுத் தொகுப்பு",
+    "realtimeFeed": "நிகழ்நேர ஊட்டம்",
+    "viewAll": "அனைத்தையும் பார்"
+  },
+  "categories": {
+    "food": "உணவு",
+    "Rent": "வாடகை",
+    "travel": "பயணம்",
+    "subscriptions": "சந்தாக்கள்",
+    "others": "மற்றவை",
+    "income": "வருமானம்"
+  },
+  "topbar": {
+    "search": "தேடு...",
+    "admin": "நிர்வாகி",
+    "viewer": "பார்வையாளர்"
+  }
+}
