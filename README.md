@@ -1,6 +1,6 @@
 # 🚀 FinDash - Elite Financial Intelligence Terminal
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-emerald?style=for-the-badge&logo=vercel)](https://fin-dash-six-gamma.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-emerald?style=for-the-badge&logo=vercel)](https://findash-zorvyn.vercel.app/)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-indigo?style=for-the-badge&logo=github)](https://github.com/SSanthoshKumar26/FinDash)
 
 ## 💎 Project Overview
