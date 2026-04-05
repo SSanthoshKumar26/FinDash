@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import i18n from './i18n';
 
 const initialTransactions = [
@@ -22,55 +23,112 @@ const initialTransactions = [
   { id: 15, date: "2026-01-30", name: "Internet Bill", category: "Subscriptions", amount: -80.00, type: "expense" },
 ];
 
-export const useStore = create((set, get) => ({
-  transactions: initialTransactions,
-  role: 'Admin', // 'Admin' | 'Viewer'
-  theme: 'dark', 
-  privacyMode: false,
-  currency: 'USD',
-  chatMessages: [
-    { id: 1, text: "Hello! I'm your AI financial assistant. How can I help you today?", sender: "bot" }
-  ],
-  
-  // Actions
-  addTransaction: (tx) => set((state) => ({ transactions: [tx, ...state.transactions] })),
-  deleteTransaction: (id) => set((state) => ({ transactions: state.transactions.filter(tx => tx.id !== id) })),
-  updateTransaction: (id, updatedTx) => set((state) => ({
-    transactions: state.transactions.map(tx => tx.id === id ? { ...tx, ...updatedTx } : tx)
-  })),
-  
-  setRole: (role) => set({ role }),
-  setCurrency: (currency) => set({ currency }),
-  togglePrivacy: () => set((state) => ({ privacyMode: !state.privacyMode })),
-  toggleTheme: () => set((state) => {
-    const newTheme = state.theme === 'dark' ? 'light' : 'dark';
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    return { theme: newTheme };
-  }),
-  
-  addChatMessage: (msg) => set((state) => ({ 
-    chatMessages: [...state.chatMessages, msg] 
-  })),
+export const useStore = create(
+  persist(
+    (set, get) => ({
+      transactions: initialTransactions,
+      role: 'Admin', // 'Admin' | 'Viewer'
+      theme: 'dark', 
+      privacyMode: false,
+      currency: 'USD',
+      conversations: [
+        { 
+          id: 'default', 
+          title: 'Initial Consultation', 
+          messages: [{ id: 1, text: "Hello! I'm your AI financial assistant. How can I help you today?", sender: "bot" }] 
+        }
+      ],
+      currentConversationId: 'default',
+      
+      // Actions
+      addTransaction: (tx) => set((state) => ({ transactions: [tx, ...state.transactions] })),
+      deleteTransaction: (id) => set((state) => ({ transactions: state.transactions.filter(tx => tx.id !== id) })),
+      updateTransaction: (id, updatedTx) => set((state) => ({
+        transactions: state.transactions.map(tx => tx.id === id ? { ...tx, ...updatedTx } : tx)
+      })),
+      
+      setRole: (role) => set({ role }),
+      setCurrency: (currency) => set({ currency }),
+      togglePrivacy: () => set((state) => ({ privacyMode: !state.privacyMode })),
+      toggleTheme: () => set((state) => {
+        const newTheme = state.theme === 'dark' ? 'light' : 'dark';
+        if (newTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+        return { theme: newTheme };
+      }),
+      
+      // New Conversation Actions
+      setCurrentConversation: (id) => set({ currentConversationId: id }),
+      
+      addChatMessage: (msg) => set((state) => ({ 
+        conversations: state.conversations.map(conv => 
+          conv.id === state.currentConversationId 
+            ? { ...conv, messages: [...conv.messages, msg], title: conv.messages.length === 1 && msg.sender === 'user' ? msg.text.substring(0, 30) + '...' : conv.title }
+            : conv
+        )
+      })),
 
-  formatCurrency: (amount) => {
-    const { currency, privacyMode } = get();
-    if (privacyMode) return '****';
-    
-    let converted = amount;
-    if (currency === 'INR') converted = amount * 83;
-    if (currency === 'EUR') converted = amount * 0.92;
-    
-    const locale = i18n.language || 'en';
-    
-    return new Intl.NumberFormat(locale, { 
-      style: 'currency', 
-      currency: currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(Math.abs(converted));
-  }
-}));
+      createNewChat: () => {
+        const newId = Date.now().toString();
+        set((state) => ({
+          conversations: [
+            { id: newId, title: 'New Conversation', messages: [{ id: Date.now(), text: "Hello! How can I help you with your finances today?", sender: "bot" }] },
+            ...state.conversations
+          ],
+          currentConversationId: newId
+        }));
+      },
+
+      deleteChat: (id) => set((state) => {
+        const newConversations = state.conversations.filter(c => c.id !== id);
+        if (newConversations.length === 0) {
+          const defaultId = 'default';
+          return {
+            conversations: [{ id: defaultId, title: 'Initial Consultation', messages: [{ id: 1, text: "Hello! I'm your AI financial assistant. How can I help you today?", sender: "bot" }] }],
+            currentConversationId: defaultId
+          };
+        }
+        return {
+          conversations: newConversations,
+          currentConversationId: state.currentConversationId === id ? newConversations[0].id : state.currentConversationId
+        };
+      }),
+
+      clearChat: () => set((state) => ({ 
+        conversations: state.conversations.map(conv => 
+          conv.id === state.currentConversationId 
+            ? { ...conv, messages: [{ id: Date.now(), text: "Chat cleared. How can I help you?", sender: "bot" }] }
+            : conv
+        )
+      })),
+
+      formatCurrency: (amount) => {
+
+        const { currency, privacyMode } = get();
+        if (privacyMode) return '****';
+        
+        let converted = amount;
+        if (currency === 'INR') converted = amount * 83;
+        if (currency === 'EUR') converted = amount * 0.92;
+        
+        const locale = i18n.language || 'en';
+        
+        return new Intl.NumberFormat(locale, { 
+          style: 'currency', 
+          currency: currency,
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }).format(Math.abs(converted));
+      }
+    }),
+    {
+      name: 'finance-dashboard-storage',
+      storage: createJSONStorage(() => localStorage),
+      // Only persist certain fields if needed, but let's persist all for now as it's a small app
+    }
+  )
+);
+
