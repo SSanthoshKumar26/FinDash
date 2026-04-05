@@ -209,7 +209,7 @@ export default function Analytics() {
   };
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700 pb-20 max-w-[1700px] mx-auto overflow-hidden px-8 pt-4">
+    <div className="space-y-10 animate-in fade-in duration-700 pb-20 max-w-[1700px] mx-auto overflow-x-hidden px-3 sm:px-6 lg:px-8 pt-4">
       {/* Unique Analytics Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <div className="space-y-2">
@@ -315,26 +315,26 @@ export default function Analytics() {
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
         <div className="xl:col-span-8">
-          <section className="glass-panel p-10 rounded-2xl border border-white/5 bg-white/[0.01] flex flex-col h-[650px] relative">
-            <div className="relative z-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8 mb-16 px-2">
+          <section className="glass-panel p-5 sm:p-8 lg:p-10 rounded-2xl border border-white/5 bg-white/[0.01] flex flex-col h-auto lg:h-[650px] min-h-[450px] relative overflow-visible">
+            <div className="relative z-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 sm:mb-16 px-0 sm:px-2">
               <div>
-                <h2 className="text-2xl font-bold text-white tracking-tight uppercase">{t('analytics.liquidityProjection', 'Liquidity Projection')}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight uppercase">{t('analytics.liquidityProjection', 'Liquidity Projection')}</h2>
                 <div className="flex items-center gap-3 mt-2">
                   <span className="text-[10px] font-bold text-white/30 uppercase">{t('analytics.liveDataFeed', 'Live Data Feed')}</span>
                   <div className="h-px w-10 bg-white/10" />
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 relative z-[200]">
-                <div className="relative" ref={dropdownRef}>
+              <div className="flex items-center gap-2 sm:gap-4 relative z-[200] w-full sm:w-auto">
+                <div className="relative flex-1 sm:flex-none" ref={dropdownRef}>
                   <button 
                     onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(prev => prev === 'type' ? null : 'type'); }}
-                    className="flex items-center justify-between gap-10 px-6 py-4 bg-[#080808] border border-white/10 rounded-xl hover:border-white/30 transition-all min-w-[260px] shadow-2xl"
+                    className="flex items-center justify-between gap-3 px-4 py-3 bg-[#080808] border border-white/10 rounded-xl hover:border-white/30 transition-all w-full sm:min-w-[220px] shadow-2xl"
                   >
-                     <span className="text-[11px] font-bold uppercase text-white/90">
+                     <span className="text-[11px] font-bold uppercase text-white/90 truncate">
                       {chartOptions.find(o => o.id === chartType)?.name}
                     </span>
-                    <ChevronDown size={14} className={`text-indigo-400 transition-transform duration-500 ${isDropdownOpen === 'type' ? 'rotate-180' : ''}`} />
+                    <ChevronDown size={14} className={`text-indigo-400 transition-transform duration-500 shrink-0 ${isDropdownOpen === 'type' ? 'rotate-180' : ''}`} />
                   </button>
                   
                   <AnimatePresence>
@@ -343,7 +343,7 @@ export default function Analytics() {
                         initial={{ opacity: 0, scale: 0.98, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.98, y: 10 }}
-                        className="absolute right-0 mt-3 w-64 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-[0_40px_80px_rgba(0,0,0,1)] z-[1100] py-3 overflow-hidden"
+                        className="absolute right-0 mt-3 w-full sm:w-64 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-[0_40px_80px_rgba(0,0,0,1)] z-[1100] py-3 overflow-hidden"
                       >
                         {chartOptions.map((opt) => (
                           <div 
@@ -363,7 +363,7 @@ export default function Analytics() {
                     )}
                   </AnimatePresence>
                 </div>
-                <button className="p-4 bg-white/5 border border-white/10 rounded-xl text-white/30 hover:text-white transition-all">
+                <button className="p-3 sm:p-4 bg-white/5 border border-white/10 rounded-xl text-white/30 hover:text-white transition-all shrink-0">
                   <Maximize2 size={16} />
                 </button>
               </div>
