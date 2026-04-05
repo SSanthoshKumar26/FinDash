@@ -1,88 +1,11 @@
-import { Bell, Moon, Sun, Menu, Shield, Eye, EyeOff, Globe, Coins, ChevronDown, Check, Activity, Cpu, Mail, Lock, X } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { Bell, Moon, Sun, Menu, Shield, Eye, EyeOff, Globe, Coins, Activity, Cpu, Mail, Lock, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../../store';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
-
-const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'hi', label: 'हिंदी' },
-  { code: 'de', label: 'Deutsch' },
-  { code: 'fr', label: 'Français' },
-  { code: 'es', label: 'Español' },
-  { code: 'zh', label: '中文' },
-  { code: 'ja', label: '日本語' },
-  { code: 'ar', label: 'العربية' },
-  { code: 'ta', label: 'தமிழ்' },
-  { code: 'ru', label: 'Русский' }
-];
-
-const CURRENCIES = ['USD', 'INR', 'EUR'];
-const ROLES = ['Admin', 'Viewer'];
-
-const CustomDropdown = ({ icon: Icon, value, options, onChange, label, iconColor = "text-indigo-500" }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) setIsOpen(false);
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-background/50 dark:bg-white/5 px-3 py-2 rounded-lg border border-border hover:border-primary/30 transition-all active:scale-95 min-w-[100px] justify-between"
-      >
-        <div className="flex items-center gap-2 overflow-hidden">
-          <Icon size={14} className={iconColor} />
-          <span className="text-xs font-black uppercase tracking-widest text-primary truncate">
-             {typeof value === 'string' ? value : (options.find(o => o.code === value)?.label || value)}
-          </span>
-        </div>
-        <ChevronDown size={12} className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute right-0 mt-2 w-48 bg-panel/90 backdrop-blur-2xl border border-border rounded-xl shadow-2xl z-[100] overflow-hidden max-h-64 overflow-y-auto custom-scrollbar shadow-indigo-500/10"
-          >
-            <div className="p-1.5 flex flex-col gap-1">
-              {options.map((opt) => {
-                const optVal = typeof opt === 'string' ? opt : opt.code;
-                const optLabel = typeof opt === 'string' ? opt : opt.label;
-                const isActive = value === optVal;
-                
-                return (
-                  <button
-                    key={optVal}
-                    onClick={() => {
-                      onChange(optVal);
-                      setIsOpen(false);
-                    }}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${isActive ? 'bg-primary text-background' : 'text-primary hover:bg-primary/5 dark:hover:bg-white/5 hover:translate-x-1'}`}
-                  >
-                    <span>{optLabel}</span>
-                    {isActive && <Check size={12} />}
-                  </button>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
+import DateTimeWeather from './DateTimeWeather';
+import CustomDropdown, { LANGUAGES, CURRENCIES, ROLES } from './CustomDropdown';
 
 const SignInModal = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
@@ -125,7 +48,7 @@ const SignInModal = ({ isOpen, onClose }) => {
             initial={{ opacity: 0, scale: 0.98, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: 10 }}
-            className="relative w-full max-w-md bg-panel p-10 rounded-2xl shadow-2xl border border-border overflow-hidden"
+            className="relative w-full max-w-md bg-panel p-6 sm:p-10 rounded-2xl shadow-2xl border border-border overflow-hidden"
           >
             {/* Professional Background Gradient */}
             <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-emerald-500" />
@@ -221,55 +144,31 @@ export default function Topbar({ toggleSidebar }) {
   const { theme, toggleTheme, role, setRole, togglePrivacy, privacyMode, currency, setCurrency } = useStore();
   const { t, i18n } = useTranslation();
   const [isSignInOpen, setIsSignInOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formattedDate = currentTime.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-  const formattedTime = currentTime.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
 
   return (
     <>
-      <header className="h-16 border-b border-border bg-panel sticky top-0 z-[100] flex items-center justify-between px-4 lg:px-8">
-        <div className="flex items-center gap-6">
-          <button className="md:hidden text-muted hover:text-primary transition-colors" onClick={toggleSidebar}>
-            <Menu size={24} />
+      <header className="h-16 border-b border-border bg-panel sticky top-0 z-[100] flex items-center justify-between px-3 md:px-8">
+        <div className="flex items-center gap-3 md:gap-6 shrink-0">
+          <button className="md:hidden text-muted hover:text-primary transition-colors p-1" onClick={toggleSidebar}>
+            <Menu size={22} />
           </button>
           
-          {/* Professional Time, Date & Weather Display */}
-          <div className="hidden lg:flex items-center gap-6 py-2 px-6 bg-background border border-border/60 rounded-xl shadow-inner">
-             <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                   <span className="text-[10px] font-black text-primary tabular-nums tracking-normal">{formattedTime}</span>
-                </div>
-                <span className="text-[8px] font-bold text-muted uppercase tracking-wider">{formattedDate}</span>
-             </div>
-             
-             <div className="w-px h-6 bg-border" />
-             
-             <div className="flex items-center gap-3">
-                <div className="flex flex-col items-end">
-                   <span className="text-[10px] font-black text-primary tracking-normal uppercase">Clear Sky</span>
-                   <span className="text-[8px] font-bold text-emerald-500 uppercase tracking-widest">Optimal Node</span>
-                </div>
-                <div className="text-xl font-black text-primary tracking-tighter">22°<span className="text-muted text-[10px] ml-0.5">C</span></div>
-             </div>
-          </div>
+          {/* Professional Time, Date & Weather Display (Hidden on Mobile, moved to Sidebar) */}
+          <DateTimeWeather className="hidden md:flex" />
         </div>
         
-        <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+        <div className="flex items-center gap-1.5 md:gap-3 lg:gap-4 ml-auto">
+          {/* Language Dropdown — always visible */}
           <CustomDropdown 
             icon={Globe} 
             value={i18n.language?.split('-')[0] || 'en'} 
             options={LANGUAGES} 
             onChange={(val) => i18n.changeLanguage(val)} 
             iconColor="text-indigo-400"
+            align="left"
           />
 
+          {/* Currency — desktop only */}
           <div className="hidden lg:block">
             <CustomDropdown 
               icon={Coins} 
@@ -280,36 +179,47 @@ export default function Topbar({ toggleSidebar }) {
             />
           </div>
 
-          <CustomDropdown 
-            icon={Shield} 
-            value={role} 
-            options={ROLES.map(r => ({ code: r, label: t(`roles.${r.toLowerCase()}`, r) }))} 
-            onChange={setRole} 
-            iconColor={role === 'Admin' ? 'text-indigo-400' : 'text-amber-400'}
-          />
+          {/* Role — md+ only */}
+          <div className="hidden md:block">
+            <CustomDropdown 
+              icon={Shield} 
+              value={role} 
+              options={ROLES.map(r => ({ code: r, label: t(`roles.${r.toLowerCase()}`, r) }))} 
+              onChange={setRole} 
+              iconColor={role === 'Admin' ? 'text-indigo-400' : 'text-amber-400'}
+            />
+          </div>
 
-          <div className="w-px h-6 bg-border hidden sm:block"></div>
+          {/* Separator — md+ */}
+          <div className="w-px h-6 bg-border hidden md:block"></div>
 
-          <button onClick={togglePrivacy} className={`relative transition-colors p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-border ${privacyMode ? 'text-indigo-500' : 'text-muted hover:text-primary'}`}>
+          {/* Privacy — md+ only */}
+          <button onClick={togglePrivacy} className={`hidden md:flex relative transition-colors p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-border ${privacyMode ? 'text-indigo-500' : 'text-muted hover:text-primary'}`}>
             {privacyMode ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
 
+          {/* Theme toggle — always visible */}
           <button onClick={toggleTheme} className="relative text-muted hover:text-primary transition-colors p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-border">
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
+          {/* Bell — always visible */}
           <button className="relative text-muted hover:text-primary transition-colors p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-border">
             <Bell size={18} />
             <span className="absolute top-1.5 right-2 w-2 h-2 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse"></span>
           </button>
-          
-          <div className="w-px h-6 bg-border hidden sm:block"></div>
-          
+
+          {/* Separator — md+ */}
+          <div className="w-px h-6 bg-border hidden md:block"></div>
+
+          {/* Sign In — always visible, single line */}
           <button 
             onClick={() => setIsSignInOpen(true)}
-            className="flex items-center gap-3 cursor-pointer group bg-primary px-5 py-2.5 border border-primary hover:bg-slate-800 transition-all rounded-xl shadow-lg"
+            className="shrink-0 flex items-center cursor-pointer group bg-primary px-2.5 sm:px-4 md:px-5 py-2 md:py-2.5 border border-primary hover:bg-slate-800 transition-all rounded-xl shadow-lg whitespace-nowrap"
           >
-            <span className="text-[10px] font-black uppercase tracking-widest text-background group-hover:text-white transition-colors">{t('topbar.signIn', 'Member Login')}</span>
+            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-background group-hover:text-white transition-colors leading-none">
+              {t('topbar.signIn', 'Sign In')}
+            </span>
           </button>
         </div>
       </header>

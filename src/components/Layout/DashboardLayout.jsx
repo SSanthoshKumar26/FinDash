@@ -55,7 +55,7 @@ export default function DashboardLayout() {
         <div className="flex-1 flex flex-col relative overflow-hidden bg-background">
           <Topbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
           
-          <main className="flex-1 overflow-y-auto px-4 md:px-8 py-6 relative scroll-smooth bg-background">
+          <main className="flex-1 overflow-y-auto px-4 md:px-8 pt-6 pb-32 relative scroll-smooth bg-background">
             <AnimatePresence mode="wait">
               {isLoading && <PageLoader key="loader" />}
             </AnimatePresence>

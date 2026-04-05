@@ -7,6 +7,7 @@ import Analytics from './pages/Analytics';
 import Insights from './pages/Insights';
 import Protocols from './pages/Protocols';
 import Planner from './pages/Planner';
+import ScrollToTop from './components/Effects/ScrollToTop';
 import { useStore } from './store';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
   }, [theme]);
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />

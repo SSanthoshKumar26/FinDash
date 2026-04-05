@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Receipt, LineChart, Lightbulb, MessageSquare, Shield, ChevronLeft, ChevronRight, X, Target } from 'lucide-react';
+import { LayoutDashboard, Receipt, LineChart, Lightbulb, Shield, ChevronLeft, ChevronRight, X, Target, Coins, Eye, EyeOff } from 'lucide-react';
 import { useStore } from '../../store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+
+import DateTimeWeather from './DateTimeWeather';
+import CustomDropdown, { CURRENCIES, ROLES } from './CustomDropdown';
 
 const navItems = [
   { key: 'dashboard', name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -15,7 +18,7 @@ const navItems = [
 ];
 
 export default function Sidebar({ isOpen, setIsOpen }) {
-  const { role, setRole } = useStore();
+  const { role, setRole, currency, setCurrency, togglePrivacy, privacyMode } = useStore();
   const { t } = useTranslation();
   const [isMobile, setIsMobile] = useState(false);
 
@@ -86,6 +89,54 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             ))}
           </nav>
         </div>
+
+        {/* Mobile-only Quick Settings */}
+        {isMobile && (
+          <div className="mx-4 mb-4 p-4 rounded-xl border border-border/50 bg-background/30 space-y-3">
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted mb-3">Quick Settings</p>
+
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Role</span>
+              <CustomDropdown
+                icon={Shield}
+                value={role}
+                options={ROLES.map(r => ({ code: r, label: t(`roles.${r.toLowerCase()}`, r) }))}
+                onChange={setRole}
+                iconColor={role === 'Admin' ? 'text-indigo-400' : 'text-amber-400'}
+                align="right"
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Currency</span>
+              <CustomDropdown
+                icon={Coins}
+                value={currency}
+                options={CURRENCIES}
+                onChange={setCurrency}
+                iconColor="text-emerald-400"
+                align="right"
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Privacy</span>
+              <button
+                onClick={togglePrivacy}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-[10px] font-black uppercase tracking-wider transition-all ${
+                  privacyMode
+                    ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400'
+                    : 'bg-background/50 border-border text-muted'
+                }`}
+              >
+                {privacyMode ? <EyeOff size={13} /> : <Eye size={13} />}
+                <span>{privacyMode ? 'On' : 'Off'}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isMobile && <DateTimeWeather vertical className="mb-6" />}
       </motion.aside>
     </>
   );
