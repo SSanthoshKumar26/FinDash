@@ -1,397 +1,354 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  IndianRupee, 
-  Target, 
-  TrendingUp, 
-  TrendingDown, 
-  Wallet, 
-  AlertCircle, 
-  CheckCircle2, 
-  PieChart, 
-  ArrowRight,
-  Zap,
-  Lightbulb,
-  ShieldCheck,
-  ZapOff,
-  ChevronDown
+  Target, TrendingUp, TrendingDown, Wallet, AlertCircle, 
+  CheckCircle2, PieChart as PieIcon, ArrowRight, Zap, 
+  Lightbulb, ShieldCheck, IndianRupee, ChevronDown, 
+  LayoutGrid, Activity, DollarSign, Euro, Calculator,
+  BarChart3
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useStore } from '../store';
+import { 
+  PieChart, Pie, Cell, ResponsiveContainer, 
+  Tooltip as RechartsTooltip, BarChart, Bar, 
+  XAxis, YAxis, CartesianGrid, Legend 
+} from 'recharts';
+
+const BUDGET_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+
+// Conversion Rates relative to 1 USD
+const RATES = {
+  USD: 1,
+  EUR: 0.92,
+  INR: 83.0
+};
+
+const MetricSection = ({ title, value, icon: Icon, colorClass, trend, status }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="p-5 border border-white/10 bg-black/5 flex flex-col justify-between h-full rounded-xl transition-all hover:bg-black/10"
+  >
+    <div className="flex justify-between items-start mb-4">
+      <div className={`p-2.5 bg-${colorClass}/10 border border-${colorClass}/20 text-${colorClass} rounded-lg`}>
+        <Icon size={20} />
+      </div>
+      {status && (
+        <div className={`px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest border border-current/20 ${
+          status === 'danger' ? 'bg-rose-500/10 text-rose-500' : 
+          status === 'warning' ? 'bg-amber-500/10 text-amber-500' : 
+          'bg-emerald-500/10 text-emerald-500'
+        }`}>
+          {status}
+        </div>
+      )}
+    </div>
+    <div>
+      <p className="text-muted text-[10px] font-black uppercase tracking-widest mb-1 opacity-60 font-sans">{title}</p>
+      <h3 className="text-2xl font-black tracking-tight text-primary tabular-nums font-sans">{value}</h3>
+    </div>
+  </motion.div>
+);
+
+const CategoryRow = ({ name, budget, actual, onUpdate, formatValue, type }) => {
+  const percent = budget > 0 ? (actual / budget) * 100 : 0;
+  const status = percent > 100 ? 'danger' : percent > 80 ? 'warning' : 'safe';
+  
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-5 hover:bg-white/5 transition-colors items-center border-b border-white/5 last:border-0">
+      <div className="lg:col-span-3 flex items-center gap-3">
+         <div className={`p-2 rounded-lg ${type === 'fixed' ? 'bg-indigo-500/10 text-indigo-400' : 'bg-amber-500/10 text-amber-400'} border border-current/10`}>
+            {type === 'fixed' ? <ShieldCheck size={16} /> : <Zap size={16} />}
+         </div>
+         <h4 className="text-xs font-black uppercase tracking-widest text-primary font-sans">{name}</h4>
+      </div>
+      
+      <div className="lg:col-span-5 grid grid-cols-2 gap-3">
+        <div className="relative">
+          <p className="text-[8px] font-black uppercase tracking-widest text-muted mb-1.5 ml-1">Limit</p>
+          <input 
+            type="number" 
+            value={budget === 0 ? '' : budget}
+            onChange={(e) => onUpdate(name, 'budget', e.target.value)}
+            className="w-full bg-black/20 border border-white/10 rounded-lg py-2.5 px-3 text-xs font-bold text-primary focus:border-indigo-500 outline-none transition-all placeholder:text-muted/30"
+            placeholder="0.00"
+          />
+        </div>
+        <div className="relative">
+          <p className="text-[8px] font-black uppercase tracking-widest text-muted mb-1.5 ml-1">Actual</p>
+          <input 
+            type="number" 
+            value={actual === 0 ? '' : actual}
+            onChange={(e) => onUpdate(name, 'actual', e.target.value)}
+            className="w-full bg-black/20 border border-white/10 rounded-lg py-2.5 px-3 text-xs font-bold text-primary focus:border-indigo-500 outline-none transition-all placeholder:text-muted/30"
+            placeholder="0.00"
+          />
+        </div>
+      </div>
+
+      <div className="lg:col-span-4 space-y-2">
+         <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest leading-none">
+           <span className="text-muted/60">Velocity</span>
+           <span className={status === 'danger' ? 'text-rose-500' : status === 'warning' ? 'text-amber-500' : 'text-emerald-500'}>
+             {percent.toFixed(0)}% <span className="text-muted/30 ml-1">({formatValue(Math.max(0, budget - actual))})</span>
+           </span>
+         </div>
+         <div className="h-1.5 w-full bg-black/40 rounded-sm overflow-hidden border border-white/5">
+           <motion.div 
+             initial={{ width: 0 }}
+             animate={{ width: `${Math.min(100, percent)}%` }}
+             className={`h-full transition-all duration-1000 ${
+               status === 'danger' ? 'bg-rose-500' : 
+               status === 'warning' ? 'bg-amber-500' : 
+               'bg-emerald-500'
+             }`}
+           />
+         </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Planner() {
   const { t } = useTranslation();
+  const [currency, setCurrency] = useState('USD');
+  const [prevCurrency, setPrevCurrency] = useState('USD');
+
+  const [incomeVal, setIncomeVal] = useState(5000);
+  const [goalVal, setGoalVal] = useState(1000);
   
-  // Local currency state based on request
-  const [plannerCurrency, setPlannerCurrency] = useState('INR');
-
-  // Input states - these will be treated as being in the selected plannerCurrency
-  const [income, setIncome] = useState('');
-  const [fixedExpenses, setFixedExpenses] = useState({
-    rent: '',
-    utilities: '',
-    groceries: ''
+  const [fixedData, setFixedData] = useState({
+    Rent: { budget: 1500, actual: 1500 },
+    Utilities: { budget: 300, actual: 280 },
+    Groceries: { budget: 400, actual: 350 },
   });
-  const [variableExpenses, setVariableExpenses] = useState({
-    transport: '',
-    entertainment: '',
-    miscellaneous: ''
+  
+  const [variableData, setVariableData] = useState({
+    Transport: { budget: 200, actual: 150 },
+    Entertainment: { budget: 300, actual: 320 },
+    Miscellaneous: { budget: 200, actual: 90 },
   });
-  const [additionalExpenses, setAdditionalExpenses] = useState('');
-  const [savingsGoal, setSavingsGoal] = useState('');
 
-  // Static Conversion Rates (Base INR as requested)
-  const CONVERSION_RATES = {
-    INR: 1,
-    USD: 83,
-    EUR: 90
-  };
-
-  // Internal calculation function in INR
-  const toBase = (amount) => (Number(amount) || 0) * CONVERSION_RATES[plannerCurrency];
-  const fromBase = (amountINR) => (amountINR / CONVERSION_RATES[plannerCurrency]);
-
-  // Core Calculations
-  const calculations = useMemo(() => {
-    // 1. Process all inputs to Base (INR)
-    const incomeBase = toBase(income);
-    const totalFixedBase = Object.values(fixedExpenses).reduce((a, b) => a + toBase(b), 0);
-    const totalVariableBase = Object.values(variableExpenses).reduce((a, b) => a + toBase(b), 0);
-    const additionalBase = toBase(additionalExpenses);
-    const goalBase = toBase(savingsGoal);
-
-    // 2. Perform Calculations in Base
-    const totalExpensesBase = totalFixedBase + totalVariableBase + additionalBase;
-    const netSavingsBase = Math.max(0, incomeBase - totalExpensesBase);
-    const savingsGapBase = goalBase - netSavingsBase;
-
-    // 3. Goal Analysis
-    const goalAchieved = goalBase > 0 ? savingsGapBase <= 0 : false;
-    const savingsPercentage = incomeBase > 0 ? (netSavingsBase / incomeBase) * 100 : 0;
-    const expenseRatio = incomeBase > 0 ? (totalExpensesBase / incomeBase) * 100 : 0;
-
-    // 4. Financial Health (Good > 30, Moderate 10-30, Poor < 10)
-    let healthStatus = 'Poor';
-    let healthColor = 'text-rose-500';
-    let healthBg = 'bg-rose-500/10';
+  useEffect(() => {
+    if (currency === prevCurrency) return;
+    const factor = RATES[currency] / RATES[prevCurrency];
+    setIncomeVal(prev => parseFloat((prev * factor).toFixed(2)) || 0);
+    setGoalVal(prev => parseFloat((prev * factor).toFixed(2)) || 0);
     
-    if (incomeBase > 0) {
-      if (savingsPercentage > 30) {
-        healthStatus = 'Good';
-        healthColor = 'text-emerald-500';
-        healthBg = 'bg-emerald-500/10';
-      } else if (savingsPercentage >= 10) {
-        healthStatus = 'Moderate';
-        healthColor = 'text-amber-500';
-        healthBg = 'bg-amber-500/10';
-      }
-    }
-
-    return {
-      totalFixedBase,
-      totalVariableBase,
-      totalExpensesBase,
-      netSavingsBase,
-      savingsGapBase,
-      goalAchieved,
-      goalBase,
-      savingsPercentage,
-      expenseRatio,
-      healthStatus,
-      healthColor,
-      healthBg,
-      hasInput: incomeBase > 0
+    const convertMap = (prevMap) => {
+        const next = {};
+        Object.entries(prevMap).forEach(([k, v]) => {
+            next[k] = { 
+                budget: parseFloat((v.budget * factor).toFixed(2)) || 0, 
+                actual: parseFloat((v.actual * factor).toFixed(2)) || 0 
+            };
+        });
+        return next;
     };
-  }, [income, fixedExpenses, variableExpenses, additionalExpenses, savingsGoal, plannerCurrency]);
+    setFixedData(prev => convertMap(prev));
+    setVariableData(prev => convertMap(prev));
+    setPrevCurrency(currency);
+  }, [currency]);
 
-  // Formatting function as requested
-  const formatValue = (valueINR) => {
-    const converted = fromBase(valueINR);
-    return converted.toLocaleString(plannerCurrency === 'INR' ? 'en-IN' : 'en-US', {
-      style: 'currency',
-      currency: plannerCurrency
-    });
+  const handleUpdate = (setter) => (name, field, value) => {
+    const numericVal = value === '' ? 0 : parseFloat(value);
+    setter(prev => ({
+      ...prev,
+      [name]: { ...prev[name], [field]: numericVal }
+    }));
   };
 
-  const handleFixedChange = (key, value) => {
-    setFixedExpenses(prev => ({ ...prev, [key]: value }));
-  };
+  const calculations = useMemo(() => {
+    const sumField = (obj, field) => Object.values(obj).reduce((sum, item) => sum + (Number(item[field]) || 0), 0);
+    const totalActual = sumField(fixedData, 'actual') + sumField(variableData, 'actual');
+    const surplus = incomeVal - totalActual;
+    const savingsRate = incomeVal > 0 ? (surplus / incomeVal) * 100 : 0;
+    const burnRate = incomeVal > 0 ? (totalActual / incomeVal) * 100 : 0;
+    
+    const insights = [];
+    if (surplus < 0) insights.push({ color: 'text-rose-500', text: `Critical structural deficit detected.` });
+    if (savingsRate < 20) insights.push({ color: 'text-amber-500', text: `Savings velocity under industry standard (20%).` });
+    if (surplus >= goalVal && goalVal > 0) insights.push({ color: 'text-emerald-500', text: `Savings target successfully initialized.` });
 
-  const handleVariableChange = (key, value) => {
-    setVariableExpenses(prev => ({ ...prev, [key]: value }));
+    const chartData = Object.entries({...fixedData, ...variableData})
+      .map(([name, val]) => ({ name, value: val.actual }));
+
+    const barData = Object.entries({...fixedData, ...variableData})
+      .map(([name, val]) => ({ name, Budget: val.budget, Actual: val.actual }));
+
+    return { totalActual, surplus, savingsRate, burnRate, insights, chartData, barData };
+  }, [incomeVal, goalVal, fixedData, variableData]);
+
+  const formatValue = (val) => {
+    return new Intl.NumberFormat('en-US', { 
+        style: 'currency', currency, maximumFractionDigits: 0 
+    }).format(val);
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8 pb-20">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-            <Target className="text-indigo-500" size={24} />
-          </div>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-primary">{t('planner.title', 'Smart Financial Planning System')}</h1>
-            <p className="text-muted text-[10px] font-bold uppercase tracking-widest opacity-70">{t('planner.subtitle', 'Intelligence-Driven Goal Alignment & Multi-Currency Protocol')}</p>
-          </div>
+    <div className="space-y-8 pb-[100px] max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+      {/* Blunt Edged Header */}
+      <header id="planner-hero" className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-white/5 pb-8">
+        <div className="flex items-center gap-4">
+           <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
+              <Calculator size={28} className="text-primary" />
+           </div>
+           <div>
+              <h1 className="text-3xl font-black tracking-tighter text-primary uppercase font-sans">Financial Intelligence Hub</h1>
+              <p className="text-muted text-[10px] font-black uppercase tracking-[0.3em] font-sans">Real-time Fiscal Control Center</p>
+           </div>
         </div>
 
-        <div className="flex flex-col gap-2 group">
-          <span className="text-[8px] font-black uppercase tracking-widest text-muted italic ml-1">{t('planner.selectCurrency', 'Deployment Currency')}</span>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-indigo-500">
-               <IndianRupee size={14} />
-            </div>
-            <select 
-              value={plannerCurrency}
-              onChange={(e) => setPlannerCurrency(e.target.value)}
-              className="bg-panel border border-border/60 text-primary text-xs font-black uppercase tracking-widest rounded-xl pl-9 pr-8 py-2.5 outline-none focus:border-indigo-500/50 transition-all cursor-pointer appearance-none shadow-xl hover:shadow-indigo-500/5"
-            >
-              <option value="INR">Indian Rupee (₹)</option>
-              <option value="USD">US Dollar ($)</option>
-              <option value="EUR">Euro (€)</option>
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
-               <ChevronDown size={14} />
-            </div>
-          </div>
+        <div className="flex bg-black/20 border border-white/5 rounded-lg p-1">
+           {['USD', 'EUR', 'INR'].map((cur) => (
+             <button
+                key={cur}
+                onClick={() => setCurrency(cur)}
+                className={`px-6 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
+                  currency === cur ? 'bg-primary text-background' : 'text-muted hover:text-primary'
+                }`}
+             >
+                {cur}
+             </button>
+           ))}
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Input Section */}
-        <div className="lg:col-span-5 space-y-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="glass-panel p-5 sm:p-6 space-y-6"
-          >
-            <div className="flex items-center gap-2 pb-4 border-b border-border/50">
-              <IndianRupee size={18} className="text-indigo-500" />
-              <h3 className="text-sm font-black uppercase tracking-widest text-primary italic">{t('planner.incomeAndGoal', 'Primary Metrics')} ({plannerCurrency})</h3>
+      {/* Input Parameters Section - Flattened Layout */}
+      <section id="planner-inputs" className="border border-white/10 p-6 rounded-xl bg-black/5 overflow-hidden">
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-3">
+               <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 font-sans">Strategic Liquid Inflow</label>
+               <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted/50 border-r border-white/10 pr-3">
+                     {currency === 'INR' ? <IndianRupee size={16} /> : currency === 'EUR' ? <Euro size={16} /> : <DollarSign size={16} />}
+                  </div>
+                  <input 
+                     type="number"
+                     value={incomeVal === 0 ? '' : incomeVal}
+                     onChange={(e) => setIncomeVal(parseFloat(e.target.value) || 0)}
+                     className="w-full bg-black/20 border border-white/10 rounded-lg py-4 pl-16 pr-5 text-2xl font-black tracking-tight text-primary focus:border-primary outline-none transition-all placeholder:text-muted/10 font-sans"
+                     placeholder="0.00"
+                  />
+               </div>
+            </div>
+            <div className="space-y-3">
+               <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 font-sans">Terminal Target Benchmark</label>
+               <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted/50 border-r border-white/10 pr-3">
+                     <Target size={16} />
+                  </div>
+                  <input 
+                     type="number"
+                     value={goalVal === 0 ? '' : goalVal}
+                     onChange={(e) => setGoalVal(parseFloat(e.target.value) || 0)}
+                     className="w-full bg-black/20 border border-white/10 rounded-lg py-4 pl-16 pr-5 text-2xl font-black tracking-tight text-primary focus:border-primary outline-none transition-all placeholder:text-muted/10 font-sans"
+                     placeholder="0.00"
+                  />
+               </div>
+            </div>
+         </div>
+      </section>
+
+      {/* Metrics Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+         <MetricSection title="Allocated Resource Burn" value={formatValue(calculations.totalActual)} icon={BarChart3} colorClass="rose-500" status={calculations.burnRate > 80 ? 'warning' : 'safe'} />
+         <MetricSection title="Available Fiscal Surplus" value={formatValue(calculations.surplus)} icon={Wallet} colorClass="emerald-500" status={calculations.surplus < 0 ? 'danger' : 'safe'} />
+         <MetricSection title="Liquidity Burn Intensity" value={`${calculations.burnRate.toFixed(0)}%`} icon={Activity} colorClass="amber-500" />
+         <MetricSection title="Strategic Asset Velocity" value={`${calculations.savingsRate.toFixed(0)}%`} icon={TrendingUp} colorClass="indigo-500" />
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+         <div id="fixed-allocation" className="xl:col-span-8 border border-white/10 rounded-xl bg-black/5 overflow-hidden">
+            <div className="p-5 border-b border-white/10 bg-white/[0.02]">
+               <h2 className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 font-sans">
+                  <ShieldCheck size={16} className="text-indigo-400" />
+                  Primary Infrastructure Allocation
+               </h2>
+            </div>
+            <div className="flex flex-col">
+               {Object.entries(fixedData).map(([name, data]) => (
+                  <CategoryRow key={name} name={name} {...data} onUpdate={handleUpdate(setFixedData)} formatValue={formatValue} type="fixed" />
+               ))}
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted">{t('planner.monthlyIncome', 'Monthly Income')}</label>
-                <input 
-                  type="number" 
-                  value={income} 
-                  placeholder="0.00"
-                  onChange={(e) => setIncome(e.target.value)}
-                  className="w-full bg-white/5 dark:bg-white/[0.07] border border-border/50 rounded-xl px-4 py-3.5 text-sm font-bold focus:outline-none focus:border-indigo-500 transition-all shadow-inner text-primary placeholder:opacity-30"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted">{t('planner.savingsGoal', 'Desired Savings Goal')}</label>
-                <input 
-                  type="number" 
-                  value={savingsGoal} 
-                  placeholder="0.00"
-                  onChange={(e) => setSavingsGoal(e.target.value)}
-                  className="w-full bg-white/5 dark:bg-white/[0.07] border border-border/50 rounded-xl px-4 py-3.5 text-sm font-bold focus:outline-none focus:border-indigo-500 transition-all shadow-inner text-primary placeholder:opacity-30"
-                />
-              </div>
+            <div className="p-5 border-b border-t border-white/10 bg-white/[0.02]">
+               <h2 className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 font-sans">
+                  <Zap size={16} className="text-amber-400" />
+                  Operational Sector Flux
+               </h2>
             </div>
-
-            <div className="space-y-4 pt-4 border-t border-border/20">
-              <div className="flex items-center gap-2">
-                <ShieldCheck size={16} className="text-indigo-500" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{t('planner.fixedExpenses', 'Fixed Operating Costs')}</h3>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {Object.entries(fixedExpenses).map(([key, val]) => (
-                  <div key={key} className="space-y-2">
-                    <label className="text-[9px] font-bold uppercase tracking-widest text-muted">{t(`planner.${key}`, key)}</label>
-                    <input 
-                      type="number" 
-                      value={val} 
-                      placeholder="0"
-                      onChange={(e) => handleFixedChange(key, e.target.value)}
-                      className="w-full bg-white/5 dark:bg-white/[0.07] border border-border/30 rounded-lg px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-indigo-500/50 text-primary"
-                    />
-                  </div>
-                ))}
-              </div>
+            <div className="flex flex-col">
+               {Object.entries(variableData).map(([name, data]) => (
+                  <CategoryRow key={name} name={name} {...data} onUpdate={handleUpdate(setVariableData)} formatValue={formatValue} type="variable" />
+               ))}
             </div>
+         </div>
 
-            <div className="space-y-4 pt-4 border-t border-border/20">
-              <div className="flex items-center gap-2">
-                <Zap size={16} className="text-amber-500" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{t('planner.variableExpenses', 'Variable Dynamics')}</h3>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {Object.entries(variableExpenses).map(([key, val]) => (
-                  <div key={key} className="space-y-2">
-                    <label className="text-[9px] font-bold uppercase tracking-widest text-muted">{t(`planner.${key}`, key)}</label>
-                    <input 
-                      type="number" 
-                      value={val} 
-                      placeholder="0"
-                      onChange={(e) => handleVariableChange(key, e.target.value)}
-                      className="w-full bg-white/5 dark:bg-white/[0.07] border border-border/30 rounded-lg px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-amber-500/50 text-primary"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2 pt-4 border-t border-border/20">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted">{t('planner.additionalExpenses', 'Ancillary / One-time Costs')} ({plannerCurrency})</label>
-              <input 
-                type="number" 
-                value={additionalExpenses} 
-                placeholder="0"
-                onChange={(e) => setAdditionalExpenses(Number(e.target.value))}
-                className="w-full bg-white/5 dark:bg-white/[0.07] border border-border/50 rounded-lg px-3 py-3 text-xs font-bold focus:outline-none focus:border-primary/30 text-primary"
-              />
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Results Section */}
-        <div className="lg:col-span-7 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="glass-panel p-6 flex flex-col justify-between"
-            >
-              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-muted mb-2">{t('planner.totalExpenses', 'Aggregated Burn Rate')}</span>
-              <div className="flex items-end justify-between">
-                <p className="text-3xl font-black text-primary tracking-tighter">{formatValue(calculations.totalExpensesBase)}</p>
-                <div className="text-[10px] font-bold bg-rose-500/10 text-rose-500 px-2 py-1 rounded border border-rose-500/20 italic">
-                  {calculations.expenseRatio.toFixed(1)}% {t('planner.ofIncome', 'Ratio')}
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-              className="glass-panel p-6 flex flex-col justify-between overflow-hidden relative"
-            >
-              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-muted mb-2">{t('planner.netSavings', 'Realized Surplus')}</span>
-              <div className="flex items-end justify-between relative z-10">
-                <p className="text-3xl font-black text-emerald-500 tracking-tighter">{formatValue(calculations.netSavingsBase)}</p>
-                <div className={`text-[10px] font-bold ${calculations.healthBg} ${calculations.healthColor} px-2 py-1 rounded border border-current/20 uppercase tracking-widest`}>
-                  {t(`planner.${calculations.healthStatus.toLowerCase()}`, calculations.healthStatus)}
-                </div>
-              </div>
-              <div className="absolute -bottom-6 -right-6 opacity-5 rotate-12 text-primary/10">
-                <Wallet size={80} />
-              </div>
-            </motion.div>
-          </div>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className={`p-1 rounded-2xl ${calculations.goalAchieved ? 'bg-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.1)]' : 'bg-rose-500/20 shadow-[0_0_20px_rgba(244,63,94,0.1)]'} border border-white/5 transition-all duration-500 group`}
-          >
-            <div className={`bg-panel border border-border/10 rounded-[14px] p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden`}>
-              <div className={`w-16 h-16 rounded-full flex items-center justify-center shrink-0 border-2 ${calculations.goalAchieved ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-500' : 'bg-rose-500/10 border-rose-500/50 text-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.3)]'}`}>
-                {calculations.goalAchieved ? <CheckCircle2 size={32} /> : <AlertCircle size={32} className="animate-pulse" />}
-              </div>
-              
-              <div className="flex-1 text-center md:text-left">
-                <h2 className="text-xl font-black uppercase tracking-tight text-primary mb-1">
-                  {calculations.goalAchieved ? t('planner.goalMet', 'Target Parameter Achieved') : t('planner.goalMissed', 'Structural Reserve Deficit')}
-                </h2>
-                <p className="text-muted text-xs font-semibold max-w-md">
-                  {calculations.goalAchieved 
-                    ? t('planner.goalMetDesc', 'Your current resource allocation fully supports your desired terminal savings state.') 
-                    : t('planner.goalMissedDesc', 'Significant calibration required in variable expenditure to align with target benchmarks.')}
-                </p>
-              </div>
-
-              {!calculations.goalAchieved && calculations.goalBase > 0 && (
-                <div className="bg-background/80 backdrop-blur-sm border border-border p-4 rounded-xl text-center min-w-[140px]">
-                  <span className="text-[8px] font-black uppercase tracking-widest text-muted block mb-1">{t('planner.requiredDelta', 'Gap to Target')}</span>
-                  <p className="text-xl font-black text-rose-500 tracking-tighter">{formatValue(calculations.savingsGapBase)}</p>
-                </div>
-              )}
-
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Target size={120} className="translate-x-1/3 -translate-y-1/3" />
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="glass-panel p-8 border-indigo-500/20 relative overflow-hidden"
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/20">
-                <Lightbulb size={20} />
-              </div>
-              <h3 className="text-lg font-black tracking-tight text-primary">{t('planner.intelligentInsights', 'Protocol Recommendations')}</h3>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-              {calculations.goalAchieved ? (
-                <>
-                  <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-2xl p-5 space-y-3">
-                    <div className="flex items-center gap-2 text-emerald-500">
-                      <TrendingUp size={16} />
-                      <span className="text-[10px] font-black uppercase tracking-widest">{t('planner.investmentProtocol', 'Investment Protocol')}</span>
+         <aside className="xl:col-span-4 space-y-8">
+            <div id="planner-insights" className="border border-white/10 p-6 rounded-xl bg-black/5">
+               <h3 className="text-[10px] font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2 border-b border-white/5 pb-4 font-sans">
+                  <Lightbulb size={14} className="text-indigo-400" />
+                  Predictive Analysis
+               </h3>
+               <div className="space-y-4">
+                  {calculations.insights.length > 0 ? calculations.insights.map((insight, i) => (
+                    <div key={i} className="flex gap-3 items-start animate-in slide-in-from-right duration-500">
+                       <ArrowRight size={14} className={`mt-0.5 shrink-0 ${insight.color}`} />
+                       <p className={`text-[10px] uppercase font-black tracking-widest leading-relaxed ${insight.color} font-sans`}>{insight.text}</p>
                     </div>
-                    <p className="text-sm font-semibold text-primary/80 leading-relaxed italic">
-                      "{t('planner.investSurplus', 'Optimal surplus detected. Recommend deploying extra savings into low-to-moderate risk growth instruments.')}"
-                    </p>
-                  </div>
-                  <div className="bg-indigo-500/5 border border-indigo-500/10 rounded-2xl p-5 space-y-3">
-                    <div className="flex items-center gap-2 text-indigo-500">
-                      <Target size={16} />
-                      <span className="text-[10px] font-black uppercase tracking-widest">{t('planner.upscalingGoal', 'Goal Calibration')}</span>
-                    </div>
-                    <p className="text-sm font-semibold text-primary/80 leading-relaxed italic">
-                      "{t('planner.increaseGoal', 'Protocol integrity verified. Recommend increasing target savings benchmark by 15% for aggressive compounding.')}"
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="bg-rose-500/5 border border-rose-500/10 rounded-2xl p-5 space-y-3">
-                    <div className="flex items-center gap-2 text-rose-500">
-                      <TrendingDown size={16} />
-                      <span className="text-[10px] font-black uppercase tracking-widest">{t('planner.exposureReduction', 'Variable Reduction')}</span>
-                    </div>
-                    <p className="text-sm font-semibold text-primary/80 leading-relaxed italic px-1">
-                      {t('planner.reduceVariable', 'Execute')} <span className="text-rose-500 font-black">{(calculations.totalVariableBase > 0 ? (calculations.savingsGapBase / calculations.totalVariableBase) * 100 : 0).toFixed(0)}%</span> {t('planner.cutAction', 'reduction in the variable expense sector to neutralize the current gap.')}
-                    </p>
-                  </div>
-                  <div className="bg-amber-500/5 border border-amber-500/10 rounded-2xl p-5 space-y-3">
-                    <div className="flex items-center gap-2 text-amber-500">
-                      <ArrowRight size={16} />
-                      <span className="text-[10px] font-black uppercase tracking-widest">{t('planner.spendingLimit', 'New Allocation Ceiling')}</span>
-                    </div>
-                    <p className="text-sm font-semibold text-primary/80 leading-relaxed italic px-1">
-                      {t('planner.newLimit', 'Hard spending limit enforced at')} <span className="text-amber-500 font-black">{formatValue(toBase(income) - toBase(savingsGoal))}</span> {t('planner.limitPeriod', 'to maintain operational consistency.')}
-                    </p>
-                  </div>
-                  <div className="md:col-span-2 bg-indigo-500/5 border border-indigo-500/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-4 group">
-                    <div className="p-3 bg-indigo-500/10 rounded-full text-indigo-500 group-hover:scale-110 transition-transform">
-                      <Zap size={24} />
-                    </div>
-                    <div className="text-center sm:text-left flex-1">
-                      <p className="text-xs font-bold text-primary italic mb-1 uppercase tracking-tight">
-                        "{t('planner.cutEntertainment', 'Terminate entertainment flows by')} <span className="text-indigo-500 font-black underline decoration-2 decoration-indigo-500/30 underline-offset-4">{formatValue(Math.min(toBase(variableExpenses.entertainment), calculations.savingsGapBase))}</span> {t('planner.cutActionEnd', 'to immediately recover system delta.')}"
-                      </p>
-                    </div>
-                  </div>
-                </>
-              )}
+                  )) : (
+                    <p className="text-[10px] uppercase font-black text-muted tracking-widest text-center py-6 italic font-sans opacity-40">All systems functioning within operational parameters.</p>
+                  )}
+               </div>
             </div>
 
-            <div className="absolute -bottom-[20%] -left-[5%] text-[15rem] font-bold opacity-[0.02] pointer-events-none select-none tracking-tighter italic">
-              INSIGHT
+            <div className="border border-white/10 p-8 rounded-xl bg-black/5">
+               <div className="h-48 relative mb-8">
+                  <ResponsiveContainer width="100%" height="100%">
+                     <PieChart>
+                        <Pie
+                           data={calculations.chartData}
+                           innerRadius={60}
+                           outerRadius={80}
+                           paddingAngle={4}
+                           dataKey="value"
+                           stroke="none"
+                        >
+                           {calculations.chartData.map((e, index) => (
+                              <Cell key={`cell-${index}`} fill={BUDGET_COLORS[index % BUDGET_COLORS.length]} fillOpacity={0.7} />
+                           ))}
+                        </Pie>
+                        <RechartsTooltip 
+                           contentStyle={{ background: '#111', border: '1px solid #333', borderRadius: '8px' }}
+                           itemStyle={{ fontSize: '9px', fontWeight: '900', textTransform: 'uppercase' }}
+                        />
+                     </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                     <span className="text-xl font-black text-primary font-sans">{calculations.burnRate.toFixed(0)}%</span>
+                     <span className="text-[8px] font-black text-muted uppercase tracking-widest font-sans">Used</span>
+                  </div>
+               </div>
+
+               <div className="h-48 w-full border-t border-white/5 pt-8">
+                <ResponsiveContainer width="100%" height="100%">
+                   <BarChart data={calculations.barData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 7, fill: 'rgba(255,255,255,0.2)', fontWeight: '900' }} dy={10} />
+                      <YAxis hide />
+                      <RechartsTooltip 
+                         cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+                         contentStyle={{ background: '#111', border: '1px solid #333', borderRadius: '8px' }}
+                         itemStyle={{ fontSize: '9px', fontWeight: '900', textTransform: 'uppercase' }}
+                      />
+                      <Bar dataKey="Limit" fill="rgba(255,255,255,0.05)" radius={[2,2,0,0]} barSize={8} />
+                      <Bar dataKey="Spent" fill="#6366f1" radius={[2,2,0,0]} barSize={8} />
+                   </BarChart>
+                </ResponsiveContainer>
+               </div>
             </div>
-          </motion.div>
-        </div>
+         </aside>
       </div>
     </div>
   );

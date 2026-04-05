@@ -1,4 +1,4 @@
-import { Bell, Moon, Sun, Menu, Shield, Eye, EyeOff, Globe, Coins, Activity, Cpu, Mail, Lock, X } from 'lucide-react';
+import { Bell, Moon, Sun, Menu, Shield, Eye, EyeOff, Globe, Coins, Activity, Cpu, Mail, Lock, X, Play } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../../store';
@@ -207,6 +207,16 @@ export default function Topbar({ toggleSidebar }) {
           <button className="relative text-muted hover:text-primary transition-colors p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-border">
             <Bell size={18} />
             <span className="absolute top-1.5 right-2 w-2 h-2 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse"></span>
+          </button>
+
+          {/* Guide Me — Replay Onboarding */}
+          <button 
+            onClick={() => useStore.getState().startOnboarding()}
+            className="flex items-center gap-2 px-3 py-2 bg-primary/10 border border-primary/20 text-primary rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all cursor-pointer"
+          >
+            <Play size={10} fill="currentColor" />
+            <span className="hidden xs:inline">Guide Me</span>
+            <span className="xs:hidden">?</span>
           </button>
 
           {/* Separator — md+ */}

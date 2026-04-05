@@ -1,6 +1,6 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, CartesianGrid, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ComposedChart, Line } from 'recharts';
-import { ArrowUpRight, ArrowDownRight, TrendingUp, PiggyBank, DollarSign, FileDown, Activity, Eye, Zap, Image as ImageIcon, FileText, AlertCircle, Loader2, ChevronDown } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, TrendingUp, PiggyBank, DollarSign, FileDown, Activity, Eye, Zap, Image as ImageIcon, FileText, AlertCircle, Loader2, ChevronDown, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
 import { useTranslation } from 'react-i18next';
@@ -21,28 +21,55 @@ const MOTIVATIONAL_QUOTES = [
 
 const PIE_COLORS = { Food: '#ef4444', Rent: '#3b82f6', Travel: '#10b981', Subscriptions: '#8b5cf6', Others: '#f59e0b', Income: '#84cc16' };
 
-const StatCard = ({ title, amount, trend, trendUp, icon: Icon, colorClass, animateProps }) => {
+const StatCard = ({ title, amount, trend, trendUp, icon: Icon, colorClass, animateProps, isLive = false }) => {
   const { t } = useTranslation();
+  const [displayAmount, setDisplayAmount] = useState(amount);
+
+  // Subtle fluctuation effect for a "live" feel
+  useEffect(() => {
+    if (!isLive) return;
+    const interval = setInterval(() => {
+      const numericVal = parseFloat(amount.replace(/[^0-9.-]+/g,""));
+      const fluctuation = (Math.random() - 0.5) * (numericVal * 0.0005);
+      const newVal = numericVal + fluctuation;
+      // We don't want to actually change the store, just the visual representation
+      // For simplicity, we just keep the formatted string structure
+      // This is purely visual "wow" factor
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [isLive, amount]);
+
   return (
     <motion.div
       {...animateProps}
-      className="glass-panel p-6 flex flex-col justify-between group h-full"
+      whileHover={{ y: -5, transition: { duration: 0.2 } }}
+      className="glass-panel p-6 flex flex-col justify-between group h-full relative overflow-hidden"
     >
-      <div className="flex justify-between items-start mb-6">
-        <div className={`p-3 rounded-md bg-black/5 dark:bg-white/5 border border-transparent dark:border-white/5 text-${colorClass || 'primary'}`}>
-          <Icon size={24} strokeWidth={1.5} />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="flex justify-between items-start mb-6 relative z-10">
+        <div className={`p-3 rounded-lg bg-black/5 dark:bg-white/5 border border-border/50 text-${colorClass || 'primary'} shadow-inner`}>
+          <Icon size={22} strokeWidth={1.5} />
         </div>
-        <div className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md border ${trendUp ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20 dark:text-emerald-400 dark:bg-emerald-400/10 dark:border-emerald-400/20' : 'text-rose-500 bg-rose-500/10 border-rose-500/20 dark:text-rose-400 dark:bg-rose-400/10 dark:border-rose-400/20'} uppercase tracking-widest`}>
-          {trendUp ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+        <div className={`flex items-center gap-1.5 text-[10px] font-bold px-2 py-1 rounded-full border ${trendUp ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border-rose-500/20'} uppercase tracking-tighter`}>
+          {trendUp ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
           {trend}
         </div>
       </div>
-      <div>
-        <h3 className="text-muted text-[10px] font-bold uppercase tracking-[0.2em] mb-2">{t(`stats.${title.toLowerCase().replace(/\s/g, '')}`, title)}</h3>
-        <p className="text-3xl font-black tracking-tight text-primary">{amount}</p>
+      <div className="relative z-10">
+        <h3 className="text-muted text-[10px] font-black uppercase tracking-[0.25em] mb-2 opacity-60">{t(`stats.${title.toLowerCase().replace(/\s/g, '')}`, title)}</h3>
+        <div className="flex items-baseline gap-2">
+          <p className="text-3xl font-black tracking-tighter text-primary">{amount}</p>
+          {isLive && (
+            <motion.div 
+              animate={{ opacity: [0.3, 1, 0.3] }} 
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+            />
+          )}
+        </div>
       </div>
-      <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Zap size={14} className="text-primary/20" />
+      <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-20 transition-opacity">
+        <Zap size={14} className="text-primary" />
       </div>
     </motion.div>
   );
@@ -216,17 +243,28 @@ export default function Dashboard() {
     const toastId = toast.loading(t('dashboard.sendingEmail', 'Dispatching Financial Report...'));
 
     try {
+      const topSpendingCategory = categoryData.length > 0 ? [...categoryData].sort((a,b) => b.value - a.value)[0].label : 'N/A';
+      const totalTxCount = transactions.length;
+      const netProfit = totalIncome - totalExpenses;
+      const savingsRate = totalIncome > 0 ? ((netProfit / totalIncome) * 100).toFixed(1) : '0';
+      const burnRate = totalIncome > 0 ? ((totalExpenses / totalIncome) * 100).toFixed(1) : '0';
+
       const templateParams = {
         to_email: recipientEmail,
         name: role === 'Admin' ? 'Administrator' : 'Viewer',
-        title: t('dashboard.systemDynamics', 'System Dynamics'),
+        title: t('dashboard.systemDynamics', 'Financial Intelligence Report'),
         time: new Date().toLocaleTimeString(),
-        date_range: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+        date_range: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
         revenue: formatCurrency(totalIncome),
         expenses: formatCurrency(totalExpenses),
-        profit: formatCurrency(totalIncome - totalExpenses),
+        profit: formatCurrency(netProfit),
         cashflow: formatCurrency(currentBalance),
-        message: `${t('dashboard.automatedIntelligence', 'Automated financial intelligence report generated for')} ${recipientEmail}.`
+        total_tx: totalTxCount,
+        top_category: topSpendingCategory,
+        savings_rate: `${savingsRate}%`,
+        burn_coefficient: `${burnRate}%`,
+        system_status: netProfit > 0 ? 'OPTIMAL (Surplus detected)' : 'CAUTION (Deficit detected)',
+        message: `${t('dashboard.automatedIntelligence', 'Comprehensive fiscal intelligence report synthesized for')} ${recipientEmail}. All vectors synchronized.`
       };
 
       await emailjs.send(
@@ -343,16 +381,29 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
-      <div ref={dashboardRef} className="space-y-8 min-h-full bg-background pb-40 text-primary">
+      <div ref={dashboardRef} className="space-y-8 min-h-full bg-background pb-8 text-primary">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-md bg-black/5 dark:bg-white/5 flex items-center justify-center border border-border shadow-inner">
+          <div id="dashboard-hero" className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-center border border-border shadow-inner">
               <Activity className="text-primary" size={20} />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-primary">{t('dashboard.systemDynamics', 'Financial Overview')}</h1>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-primary">{t('dashboard.systemDynamics', 'Financial Overview')}</h1>
+              <div className="flex items-center gap-4 mt-1">
+                <div className="flex items-center gap-2 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">{isAdmin ? 'Admin Terminal' : 'Viewer Mode'}</span>
+                </div>
+                {isAdmin && (
+                  <div className="flex items-center gap-2 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+                    <ShieldCheck size={10} className="text-indigo-500" />
+                    <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">Protocol: Optimal</span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-          <p className="text-muted text-xs font-semibold tracking-[0.1em] uppercase opacity-70">{t('dashboard.coreMetrics', 'Operational Intelligence & Portfolio Management')}</p>
         </div>
         
         <motion.div 
@@ -362,8 +413,8 @@ export default function Dashboard() {
         >
           {/* modern Command Bar */}
           <div className="relative group/command w-full sm:w-auto">
-             <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-2xl blur-lg opacity-0 group-focus-within/command:opacity-100 transition-opacity duration-500"></div>
-             <div className="relative flex items-center bg-panel border border-border rounded-2xl p-1 shadow-2xl w-full min-w-0 sm:min-w-[320px] md:min-w-[450px]">
+             <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-focus-within/command:opacity-100 transition-opacity duration-700"></div>
+             <div className="relative flex items-center bg-panel border border-border/60 rounded-2xl p-1 shadow-2xl w-full min-w-0 sm:min-w-[320px] md:min-w-[450px] backdrop-blur-xl">
                 <div className="pl-4 pr-2 text-indigo-500 shrink-0">
                    <Activity size={18} />
                 </div>
@@ -377,7 +428,7 @@ export default function Dashboard() {
                 <button 
                   onClick={sendEmailReport}
                   disabled={isSendingEmail || !recipientEmail}
-                  className="relative px-3 sm:px-6 py-2.5 rounded-xl bg-primary text-background text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800 transition-all disabled:opacity-20 disabled:cursor-not-allowed group-hover/command:shadow-lg active:scale-95 shrink-0"
+                  className="relative px-3 sm:px-6 py-2.5 rounded-xl bg-primary text-background text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all disabled:opacity-20 disabled:cursor-not-allowed group-hover/command:shadow-lg active:scale-95 shrink-0"
                 >
                   {isSendingEmail ? (
                     <Loader2 size={14} className="animate-spin" />
@@ -461,14 +512,14 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-in slide-in-from-bottom duration-700 delay-200">
-        <StatCard title={t('dashboard.capitalReservoir', 'Capital Reservoir')} amount={formatCurrency(currentBalance)} trend="+12.5%" trendUp={true} icon={DollarSign} colorClass="blue" />
-        <StatCard title={t('dashboard.inflowVelocity', 'Inflow Velocity')} amount={formatCurrency(totalIncome)} trend="+8.2%" trendUp={true} icon={TrendingUp} colorClass="emerald" />
-        <StatCard title={t('dashboard.burnCoefficient', 'Burn Coefficient')} amount={formatCurrency(totalExpenses)} trend="-2.4%" trendUp={false} icon={ArrowDownRight} colorClass="rose" />
+      <div id="stat-cards" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-in slide-in-from-bottom duration-700 delay-200">
+        <StatCard title={t('dashboard.capitalReservoir', 'Capital Reservoir')} amount={formatCurrency(currentBalance)} trend="+12.5%" trendUp={true} icon={DollarSign} colorClass="blue" isLive={true} />
+        <StatCard title={t('dashboard.inflowVelocity', 'Inflow Velocity')} amount={formatCurrency(totalIncome)} trend="+8.2%" trendUp={true} icon={TrendingUp} colorClass="emerald" isLive={true} />
+        <StatCard title={t('dashboard.burnCoefficient', 'Burn Coefficient')} amount={formatCurrency(totalExpenses)} trend="-2.4%" trendUp={false} icon={ArrowDownRight} colorClass="rose" isLive={true} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 glass-panel p-6 min-h-[450px]">
+        <div id="main-chart" className="lg:col-span-2 glass-panel p-6 min-h-[450px]">
           <div className="flex justify-between items-center mb-10">
             <div>
               <h2 className="text-lg font-bold text-primary tracking-tight">{t('dashboard.activeLiquidity', 'Active Liquidity')}</h2>
@@ -483,7 +534,7 @@ export default function Dashboard() {
           <div className="h-80 w-full overflow-hidden">
             <ResponsiveContainer width="100%" height="100%">
               {activeMetric === 'balance' ? (
-                <AreaChart data={balanceData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                <AreaChart data={balanceData} syncId="dashSync" margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                   <XAxis dataKey="date" hide />
                   <YAxis hide />
                   <Tooltip 
@@ -668,7 +719,7 @@ export default function Dashboard() {
            <h2 className="text-lg font-bold text-primary tracking-tight mb-8">{t('dashboard.burnVelocity', 'Burn Velocity')}</h2>
            <div className="h-44 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                 <ComposedChart data={monthlyTrend}>
+                 <ComposedChart data={monthlyTrend} syncId="dashSync">
                     <XAxis dataKey="month" hide />
                     <Tooltip contentStyle={{ borderRadius: '12px', background: 'var(--panel-color)', border: '1px solid var(--border-color)' }} />
                     <Bar dataKey="expenses" fill="var(--color-rose-500)" radius={[4, 4, 0, 0]} />

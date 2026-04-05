@@ -66,7 +66,7 @@ export default function Transactions() {
   return (
     <div className="space-y-6 lg:space-y-8 animate-in fade-in duration-500 pb-20">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
+        <div id="transactions-hero">
           <h1 className="text-3xl font-bold tracking-tight text-primary mb-2">{t('transactions.title', 'Ledger Core')}</h1>
           <p className="text-muted text-xs font-semibold uppercase tracking-widest opacity-70">{t('transactions.subtitle', 'High Performance Transaction Engine')}</p>
         </div>
@@ -79,7 +79,7 @@ export default function Transactions() {
         </button>
       </div>
 
-      <div className="glass-panel overflow-hidden mt-8 border-border rounded-xl">
+      <div id="transactions-table" className="glass-panel overflow-hidden mt-8 border-border rounded-xl">
         <div className="p-5 border-b border-border flex flex-col sm:flex-row gap-4 justify-between bg-slate-50/50 dark:bg-white/5 backdrop-blur-sm">
           <div className="relative w-full sm:w-80 group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" size={16} />

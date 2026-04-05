@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Receipt, LineChart, Lightbulb, Shield, ChevronLeft, ChevronRight, X, Target, Coins, Eye, EyeOff } from 'lucide-react';
+import { LayoutDashboard, Receipt, LineChart, Lightbulb, Shield, ChevronLeft, ChevronRight, X, Target, Coins, Eye, EyeOff, Wallet } from 'lucide-react';
 import { useStore } from '../../store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -10,11 +10,10 @@ import CustomDropdown, { CURRENCIES, ROLES } from './CustomDropdown';
 
 const navItems = [
   { key: 'dashboard', name: 'Dashboard', path: '/', icon: LayoutDashboard },
-  { key: 'planner', name: 'Planner', path: '/planner', icon: Target },
+  { key: 'planner', name: 'Intelligence Hub', path: '/planner', icon: Target },
   { key: 'transactions', name: 'Transactions', path: '/transactions', icon: Receipt },
   { key: 'analytics', name: 'Analytics', path: '/analytics', icon: LineChart },
   { key: 'insights', name: 'Insights', path: '/insights', icon: Lightbulb },
-  { key: 'protocols', name: 'Protocols', path: '/protocols', icon: Shield },
 ];
 
 export default function Sidebar({ isOpen, setIsOpen }) {
@@ -75,6 +74,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             {navItems.map((item) => (
               <NavLink
                 key={item.key}
+                id={`sidebar-${item.key}`}
                 to={item.path}
                 onClick={handleNavClick}
                 end={item.path === '/'}

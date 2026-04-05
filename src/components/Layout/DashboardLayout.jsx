@@ -8,24 +8,33 @@ import { Toaster } from 'react-hot-toast';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
+import { useStore } from '../../store';
+import OnboardingGuide from '../Onboarding/OnboardingGuide';
 
 export default function DashboardLayout() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
+  const { isSidebarOpen, setSidebarOpen, toggleSidebar, onboarding, startOnboarding } = useStore();
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Start as true for initial mount
+  const [isLoading, setIsLoading] = useState(true); 
   const location = useLocation();
+
+  useEffect(() => {
+    // Start onboarding on first visit
+    if (!onboarding.seenOnboarding && !onboarding.isActive) {
+      setTimeout(() => startOnboarding(), 2000);
+    }
+  }, [onboarding.seenOnboarding, onboarding.isActive, startOnboarding]);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setIsSidebarOpen(false);
+        setSidebarOpen(false);
       } else {
-        setIsSidebarOpen(true);
+        setSidebarOpen(true);
       }
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [setSidebarOpen]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -50,10 +59,10 @@ export default function DashboardLayout() {
       />
       
       <div className="flex-1 flex flex-row relative z-10 w-full overflow-hidden bg-background">
-        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+        <Sidebar isOpen={isSidebarOpen} setIsOpen={setSidebarOpen} />
       
         <div className="flex-1 flex flex-col relative overflow-hidden bg-background">
-          <Topbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+          <Topbar toggleSidebar={toggleSidebar} />
           
           <main className="flex-1 overflow-y-auto px-4 md:px-8 pt-6 pb-32 relative scroll-smooth bg-background">
             <AnimatePresence mode="wait">
@@ -67,6 +76,7 @@ export default function DashboardLayout() {
       </div>
 
       <ChatbotPanel isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} onToggle={() => setIsChatOpen(!isChatOpen)} />
+      <OnboardingGuide />
     </div>
   );
 }

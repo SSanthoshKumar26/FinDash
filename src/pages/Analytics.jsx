@@ -135,7 +135,7 @@ export default function Analytics() {
     switch (chartType) {
       case 'bar':
         return (
-          <BarChart data={chartData.trend} {...commonProps}>
+          <BarChart data={chartData.trend} syncId="analyticsSync" {...commonProps}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 700 }} dy={10} />
             <YAxis hide />
@@ -146,7 +146,7 @@ export default function Analytics() {
         );
       case 'line':
         return (
-          <LineChart data={chartData.trend} {...commonProps}>
+          <LineChart data={chartData.trend} syncId="analyticsSync" {...commonProps}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 700 }} dy={10} />
             <YAxis hide />
@@ -190,7 +190,7 @@ export default function Analytics() {
       case 'area':
       default:
         return (
-          <AreaChart data={chartData.trend} {...commonProps}>
+          <AreaChart data={chartData.trend} syncId="analyticsSync" {...commonProps}>
             <defs>
               <linearGradient id="areaInc" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#6366f1" stopOpacity={0.4}/>
@@ -211,29 +211,33 @@ export default function Analytics() {
   return (
     <div className="space-y-10 animate-in fade-in duration-700 pb-20 max-w-[1700px] mx-auto overflow-x-hidden px-3 sm:px-6 lg:px-8 pt-4">
       {/* Unique Analytics Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-        <div className="space-y-2">
+      <header id="analytics-hero" className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+        <div className="space-y-4">
           <div className="flex items-center gap-3">
-             <div className="p-2 bg-indigo-500 rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.3)]">
-                <Target size={20} className="text-white" />
+             <div className="p-2.5 bg-indigo-500 rounded-2xl shadow-[0_0_30px_rgba(99,102,241,0.4)]">
+                <Target size={22} className="text-white" />
              </div>
-             <h1 className="text-3xl font-bold tracking-tight text-white uppercase">{t('analytics.forecastingHub', 'Forecasting Hub')}</h1>
+             <div>
+               <h1 className="text-3xl font-black tracking-tight text-white uppercase italic">{t('analytics.forecastingHub', 'Forecasting Hub')}</h1>
+               <p className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.3em] mt-1">{t('analytics.forecastingSubtitle', 'Advanced Quantitative Intelligence')}</p>
+             </div>
           </div>
-           <p className="text-[10px] font-medium text-white/40 uppercase">{t('analytics.forecastingSubtitle', 'Advanced analytics and financial forecasting')}</p>
-          <div className="flex gap-2 mt-4">
-             <button onClick={() => setRole('admin')} className={`px-4 py-1.5 rounded-full text-[9px] font-bold uppercase transition-all ${role === 'admin' ? 'bg-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]' : 'bg-white/5 text-white/20'}`}>{t('roles.admin', 'Admin')}</button>
-             <button onClick={() => setRole('viewer')} className={`px-4 py-1.5 rounded-full text-[9px] font-bold uppercase transition-all ${role === 'viewer' ? 'bg-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]' : 'bg-white/5 text-white/20'}`}>{t('roles.viewer', 'Viewer')}</button>
+          <div className="flex gap-2">
+             <div className="px-4 py-1.5 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2">
+                <ShieldCheck size={12} className={role === 'admin' ? 'text-emerald-500' : 'text-amber-500'} />
+                <span className="text-[10px] font-black text-white uppercase tracking-widest">{role === 'admin' ? 'Root Access' : 'Restricted Node'}</span>
+             </div>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
            {role === 'admin' && (
-             <div className="flex items-center gap-2 bg-white/5 p-1.5 rounded-xl border border-white/10 ring-1 ring-white/5">
+             <div className="flex items-center gap-2 bg-black border border-white/10 p-1 rounded-xl ring-1 ring-white/5">
               {['monthly', 'weekly'].map((range) => (
                 <button 
                   key={range}
                   onClick={() => setTimeRange(range)}
-                  className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase transition-all ${timeRange === range ? 'bg-white text-black shadow-xl shadow-white/10' : 'text-white/40 hover:text-white'}`}
+                  className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase transition-all ${timeRange === range ? 'bg-white text-black shadow-2xl' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
                 >
                   {t(`analytics.${range}`, range === 'monthly' ? 'Monthly' : 'Weekly')}
                 </button>
@@ -241,17 +245,16 @@ export default function Analytics() {
             </div>
            )}
           <div className="h-10 w-px bg-white/10 mx-2 hidden md:block" />
-          {role === 'admin' && (
-            <div className="flex items-center gap-3 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-               <span className="text-[10px] font-bold text-emerald-500 uppercase">{t('analytics.synced', 'System Synchronized')}: {lastSync}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-3 px-5 py-3 bg-[#080808] border border-white/10 rounded-2xl shadow-inner relative overflow-hidden group">
+             <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] relative" />
+             <span className="text-[10px] font-black text-white/60 uppercase tracking-tighter relative">{t('analytics.synced', 'Node Sync')}: <span className="text-white">{lastSync}</span></span>
+          </div>
         </div>
       </header>
 
       {/* Analytical Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8 mb-12">
+      <div id="analytics-metrics" className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8 mb-12">
         <div className="glass-panel p-8 rounded-2xl border border-white/5 bg-gradient-to-br from-indigo-500/[0.03] to-transparent relative overflow-hidden group">
           <div className="flex justify-between items-start mb-12">
             <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-indigo-400 group-hover:scale-110 transition-transform">
@@ -315,7 +318,7 @@ export default function Analytics() {
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
         <div className="xl:col-span-8">
-          <section className="glass-panel p-5 sm:p-8 lg:p-10 rounded-2xl border border-white/5 bg-white/[0.01] relative overflow-visible">
+          <section id="analytics-grid" className="glass-panel p-5 sm:p-8 lg:p-10 rounded-2xl border border-white/5 bg-white/[0.01] relative overflow-visible">
             <div className="relative z-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-10 px-0 sm:px-2">
               <div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight uppercase">{t('analytics.liquidityProjection', 'Liquidity Projection')}</h2>

@@ -29,7 +29,6 @@ function App() {
           <Route path="transactions" element={<Transactions />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="insights" element={<Insights />} />
-          <Route path="protocols" element={<Protocols />} />
           <Route path="planner" element={<Planner />} />
         </Route>
       </Routes>

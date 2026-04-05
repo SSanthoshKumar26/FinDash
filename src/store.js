@@ -31,16 +31,63 @@ export const useStore = create(
       theme: 'dark', 
       privacyMode: false,
       currency: 'USD',
+      systemStatus: 'Optimal',
+      lastDataSync: new Date().toISOString(),
       conversations: [
         { 
-          id: 'default', 
-          title: 'Initial Consultation', 
-          messages: [{ id: 1, text: "Hello! I'm your AI financial assistant. How can I help you today?", sender: "bot" }] 
+          messages: [{ id: 1, text: "**FinDash AI: Session Initialized.**\n\nI have synchronized with your financial vectors. I am ready to provide technical intelligence and strategic fiscal analysis.", sender: "bot" }] 
         }
       ],
       currentConversationId: 'default',
+      budgets: [
+        { category: 'Food', amount: 500 },
+        { category: 'Travel', amount: 300 },
+        { category: 'Education', amount: 200 },
+        { category: 'Entertainment', amount: 200 },
+        { category: 'Subscriptions', amount: 150 },
+        { category: 'Rent', amount: 1200 },
+        { category: 'Others', amount: 200 }
+      ],
+      isSidebarOpen: window.innerWidth >= 768,
+      setSidebarOpen: (isOpen) => set({ isSidebarOpen: isOpen }),
+      toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+
+      onboarding: {
+        isActive: false,
+        currentStep: 0,
+        seenOnboarding: false,
+      },
+      
+      startOnboarding: () => set((state) => ({ 
+        onboarding: { ...state.onboarding, isActive: true, currentStep: 0 } 
+      })),
+      nextOnboardingStep: () => set((state) => ({ 
+        onboarding: { ...state.onboarding, currentStep: state.onboarding.currentStep + 1 } 
+      })),
+      prevOnboardingStep: () => set((state) => ({ 
+        onboarding: { ...state.onboarding, currentStep: Math.max(0, state.onboarding.currentStep - 1) } 
+      })),
+      goToOnboardingStep: (step) => set((state) => ({
+        onboarding: { ...state.onboarding, currentStep: step }
+      })),
+      skipOnboarding: () => set((state) => ({ 
+        onboarding: { ...state.onboarding, isActive: false, seenOnboarding: true } 
+      })),
+      completeOnboarding: () => set((state) => ({ 
+        onboarding: { ...state.onboarding, isActive: false, seenOnboarding: true } 
+      })),
+      resetOnboarding: () => set((state) => ({ 
+        onboarding: { isActive: false, currentStep: 0, seenOnboarding: false } 
+      })),
       
       // Actions
+      updateBudget: (category, amount) => set((state) => ({
+        budgets: state.budgets.some(b => b.category === category)
+          ? state.budgets.map(b => b.category === category ? { ...b, amount: parseFloat(amount) } : b)
+          : [...state.budgets, { category, amount: parseFloat(amount) }]
+      })),
+      setStatus: (status) => set({ systemStatus: status }),
+      refreshSync: () => set({ lastDataSync: new Date().toISOString() }),
       addTransaction: (tx) => set((state) => ({ transactions: [tx, ...state.transactions] })),
       deleteTransaction: (id) => set((state) => ({ transactions: state.transactions.filter(tx => tx.id !== id) })),
       updateTransaction: (id, updatedTx) => set((state) => ({
@@ -75,7 +122,7 @@ export const useStore = create(
         const newId = Date.now().toString();
         set((state) => ({
           conversations: [
-            { id: newId, title: 'New Conversation', messages: [{ id: Date.now(), text: "Hello! How can I help you with your finances today?", sender: "bot" }] },
+            { id: newId, title: 'New Conversation', messages: [{ id: Date.now(), text: "New session initialized. I am FinDash AI. How can I assist with your financial intelligence requirements?", sender: "bot" }] },
             ...state.conversations
           ],
           currentConversationId: newId
@@ -87,7 +134,7 @@ export const useStore = create(
         if (newConversations.length === 0) {
           const defaultId = 'default';
           return {
-            conversations: [{ id: defaultId, title: 'Initial Consultation', messages: [{ id: 1, text: "Hello! I'm your AI financial assistant. How can I help you today?", sender: "bot" }] }],
+            conversations: [{ id: defaultId, title: 'Initial Consultation', messages: [{ id: 1, text: "**FinDash AI: Session Initialized.**\n\nI have synchronized with your financial vectors. I am ready to provide technical intelligence and strategic fiscal analysis.", sender: "bot" }] }],
             currentConversationId: defaultId
           };
         }
@@ -100,7 +147,7 @@ export const useStore = create(
       clearChat: () => set((state) => ({ 
         conversations: state.conversations.map(conv => 
           conv.id === state.currentConversationId 
-            ? { ...conv, messages: [{ id: Date.now(), text: "Chat cleared. How can I help you?", sender: "bot" }] }
+            ? { ...conv, messages: [{ id: Date.now(), text: "Session buffer cleared. I am FinDash AI. Ready for your next query.", sender: "bot" }] }
             : conv
         )
       })),

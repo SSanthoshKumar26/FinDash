@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../../store';
 import Groq from 'groq-sdk';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 
 const groq = new Groq({ 
   apiKey: import.meta.env.VITE_GROQ_API_KEY, 
@@ -25,6 +27,7 @@ export default function ChatbotPanel({ isOpen, onClose, onToggle }) {
   } = useStore();
   
   const { t } = useTranslation();
+  const location = useLocation();
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -111,21 +114,36 @@ export default function ChatbotPanel({ isOpen, onClose, onToggle }) {
     setInput('');
     setIsTyping(true);
 
-    const systemPrompt = `You are FinAI Oracle, an advanced AI financial wealth advisor.
+    const systemPrompt = `You are FinDash AI, the intelligent assistant for the Zorvyn Financial Dashboard. 
     
-    TONE & STYLE:
-    - Mirror the user's tone. Be friendly if they are, professional if they are.
-    - Be concise and intelligent. 
-    - Act like a high-end personal wealth assistant.
+    STRICT RESPONSE STRUCTURE (MANDATORY):
+    1. **Title**: Clear heading for the topic.
+    2. **Summary**: Max 2-3 lines explaining the core concept.
+    3. **Structural Breakdown**: Detailed bullet points for data, features, or metrics. Use **Bold Labels** for all numbers and categories.
+    4. **Analytical Insights**: Direct, meaningful analysis of the user's data (e.g., "Positive cash flow vector detected").
+    5. **Strategic Recommendations**: Actionable steps for financial optimization.
 
-    RULES:
-    1. For greetings, respond naturally. 
-    2. Only show financial data if asked.
-    3. Keep responses brief but insightful.
+    STYLE GUIDELINES:
+    - ZERO long paragraphs. Break information into readable blocks.
+    - NO generic filler text or introductory fluff ("I hope this helps").
+    - Professional, confident, and technical tone.
+    - Use spacing and markdown headers (--- or Bold) for premium visual structure.
 
-    DATA:
-    Balance: ${financialContext.balance} ${financialContext.currency}
-    Recent: ${financialContext.recentTransactions}`;
+    CORE KNOWLEDGE & CONTEXT:
+    - Current Page: User is viewing the ${location.pathname} section.
+    - Dashboard: High-level overview of revenue vs expenses.
+    - Planner: Core engine for Burn Rate (spending velocity), Surplus (liquid buffer), and Savings Rate calculations.
+    - Transactions: Universal Ledger for historical vector analysis.
+    - Analytics: Forecasting Hub for trend synchronization.
+
+    USER DATA OVERLAY:
+    - Balance: ${financialContext.balance} ${financialContext.currency}
+    - Income: ${financialContext.totalIncome} ${financialContext.currency}
+    - Recent Vectors: ${financialContext.recentTransactions}
+    - Spending Concentration: ${financialContext.topCategories}
+
+    GOAL:
+    Deliver instant value through structured intelligence. If asked for a definition (e.g., "What is burn rate?"), provide a structured breakdown of the metric and its impact.`;
 
     try {
       const response = await groq.chat.completions.create({
@@ -172,11 +190,11 @@ export default function ChatbotPanel({ isOpen, onClose, onToggle }) {
                 </button>
                 <div>
                   <h3 className="font-bold text-sm text-primary tracking-tight truncate max-w-[150px]">
-                    {currentChat.title}
+                    Intelligence Assistant
                   </h3>
                   <div className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span className="text-[10px] text-muted font-semibold uppercase tracking-widest">FinAI v2.0</span>
+                    <span className="text-[10px] text-muted font-semibold uppercase tracking-widest">FinDash AI v1.0</span>
                   </div>
                 </div>
               </div>
@@ -255,12 +273,28 @@ export default function ChatbotPanel({ isOpen, onClose, onToggle }) {
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {currentChat.messages.map((msg) => (
                     <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[85%] p-3.5 text-sm leading-relaxed shadow-sm tracking-wide border ${
+                      <div className={`max-w-[90%] p-4 text-sm leading-relaxed shadow-lg tracking-wide border ${
                         msg.sender === 'user' 
-                          ? 'bg-background text-primary border-border rounded-2xl rounded-br-sm font-medium' 
-                          : 'bg-primary text-background border-primary rounded-2xl rounded-bl-sm font-medium'
+                          ? 'bg-background text-primary border-border rounded-2xl rounded-br-none font-medium' 
+                          : 'bg-primary text-background border-primary rounded-2xl rounded-bl-none font-medium shadow-primary/20'
                       }`}>
-                        {msg.text}
+                        <div className={`markdown-content ${msg.sender === 'bot' ? 'bot-message' : 'user-message'}`}>
+                          <ReactMarkdown 
+                            components={{
+                              p: ({node, ...props}) => <p className="mb-3 last:mb-0" {...props} />,
+                              ul: ({node, ...props}) => <ul className="list-disc pl-4 mb-3 space-y-1" {...props} />,
+                              ol: ({node, ...props}) => <ol className="list-decimal pl-4 mb-3 space-y-1" {...props} />,
+                              li: ({node, ...props}) => <li className="pl-1" {...props} />,
+                              h1: ({node, ...props}) => <h1 className="text-base font-black uppercase tracking-widest mb-3" {...props} />,
+                              h2: ({node, ...props}) => <h2 className="text-sm font-black uppercase tracking-widest mb-2" {...props} />,
+                              h3: ({node, ...props}) => <h3 className="text-xs font-black uppercase tracking-wider mb-2" {...props} />,
+                              strong: ({node, ...props}) => <strong className="font-black" {...props} />,
+                              hr: () => <hr className="my-4 border-current opacity-10" />
+                            }}
+                          >
+                            {msg.text}
+                          </ReactMarkdown>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -290,7 +324,7 @@ export default function ChatbotPanel({ isOpen, onClose, onToggle }) {
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder={isListening ? "Listening..." : "Ask FinAI..."}
+                        placeholder={isListening ? "Listening..." : "Ask FinDash AI..."}
                         className="w-full bg-panel border border-border rounded-xl pl-4 pr-10 py-3 text-sm focus:outline-none focus:border-primary text-primary transition-all shadow-inner placeholder:text-muted"
                       />
                       <button 
@@ -318,7 +352,7 @@ export default function ChatbotPanel({ isOpen, onClose, onToggle }) {
           className="fixed right-6 bottom-6 z-50 p-4 bg-primary text-background rounded-full shadow-xl hover:opacity-90 transition-all cursor-pointer flex items-center gap-2 group border border-transparent dark:border-white/10"
         >
           <Cpu size={24} className="text-background" />
-          <span className="text-sm font-bold tracking-widest uppercase pr-1">FinAI Oracle</span>
+          <span className="text-sm font-bold tracking-widest uppercase pr-1">FinDash AI</span>
         </motion.button>
       )}
     </>
