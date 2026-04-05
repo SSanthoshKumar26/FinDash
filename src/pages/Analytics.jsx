@@ -315,8 +315,8 @@ export default function Analytics() {
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
         <div className="xl:col-span-8">
-          <section className="glass-panel p-5 sm:p-8 lg:p-10 rounded-2xl border border-white/5 bg-white/[0.01] flex flex-col h-auto lg:h-[650px] min-h-[450px] relative overflow-visible">
-            <div className="relative z-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 sm:mb-16 px-0 sm:px-2">
+          <section className="glass-panel p-5 sm:p-8 lg:p-10 rounded-2xl border border-white/5 bg-white/[0.01] relative overflow-visible">
+            <div className="relative z-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-10 px-0 sm:px-2">
               <div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight uppercase">{t('analytics.liquidityProjection', 'Liquidity Projection')}</h2>
                 <div className="flex items-center gap-3 mt-2">
@@ -331,7 +331,7 @@ export default function Analytics() {
                     onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(prev => prev === 'type' ? null : 'type'); }}
                     className="flex items-center justify-between gap-3 px-4 py-3 bg-[#080808] border border-white/10 rounded-xl hover:border-white/30 transition-all w-full sm:min-w-[220px] shadow-2xl"
                   >
-                     <span className="text-[11px] font-bold uppercase text-white/90 truncate">
+                    <span className="text-[11px] font-bold uppercase text-white/90 truncate">
                       {chartOptions.find(o => o.id === chartType)?.name}
                     </span>
                     <ChevronDown size={14} className={`text-indigo-400 transition-transform duration-500 shrink-0 ${isDropdownOpen === 'type' ? 'rotate-180' : ''}`} />
@@ -355,8 +355,8 @@ export default function Analytics() {
                             }}
                             className={`w-full flex items-center gap-4 px-6 py-4 text-left transition-all cursor-pointer ${chartType === opt.id ? 'bg-indigo-500 text-white' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
                           >
-                             <opt.icon size={16} strokeWidth={2} />
-                             <span className="text-[11px] font-bold uppercase">{opt.name}</span>
+                            <opt.icon size={16} strokeWidth={2} />
+                            <span className="text-[11px] font-bold uppercase">{opt.name}</span>
                           </div>
                         ))}
                       </motion.div>
@@ -369,13 +369,15 @@ export default function Analytics() {
               </div>
             </div>
 
-            <div className={`flex-1 min-h-0 relative z-10 ${isDropdownOpen ? 'pointer-events-none' : ''}`}>
+            {/* Chart area — explicit height required for ResponsiveContainer */}
+            <div className="h-[280px] sm:h-[360px] lg:h-[460px] w-full relative z-10">
               <AnimatePresence mode="wait">
                 <motion.div 
-                  key={chartType + categoryFilter}
+                  key={chartType}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
                   className="h-full w-full"
                 >
                   <ResponsiveContainer width="100%" height="100%">
