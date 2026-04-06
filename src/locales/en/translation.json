@@ -76,7 +76,12 @@
     "predictedBurn": "Predicted Burn",
     "realtimeFeed": "Real-time Feed",
     "viewAll": "View All",
-    "automatedIntelligenceShort": "Auto-AI Analysis"
+    "automatedIntelligenceShort": "Auto-AI Analysis",
+    "adminTerminal": "Admin Terminal",
+    "viewerMode": "Viewer Mode",
+    "protocolOptimal": "Protocol: Optimal",
+    "exportCSV": "Export CSV",
+    "exportPDF": "Export PDF"
   },
   "stats": {
     "totalbalance": "Total Balance",

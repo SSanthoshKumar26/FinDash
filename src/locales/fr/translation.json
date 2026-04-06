@@ -76,7 +76,12 @@
     "predictedBurn": "Combustion Prévisible",
     "realtimeFeed": "Flux en Temps Réel",
     "viewAll": "Voir Tout",
-    "automatedIntelligenceShort": "Analyse IA Auto"
+    "automatedIntelligenceShort": "Analyse IA Auto",
+    "adminTerminal": "Terminal Administrateur",
+    "viewerMode": "Mode Spectateur",
+    "protocolOptimal": "Protocole : Optimal",
+    "exportCSV": "Exporter CSV",
+    "exportPDF": "Exporter PDF"
   },
   "stats": {
     "totalbalance": "Solde Total",
@@ -229,7 +234,7 @@
   "topbar": {
     "search": "Rechercher...",
     "signIn": "Se Connecter",
-    "guideMe": "Guide-moi",
+    "guideMe": "Guide Me",
     "guideMeShort": "Guide"
   },
   "roles": {

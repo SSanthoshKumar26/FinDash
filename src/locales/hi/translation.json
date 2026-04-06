@@ -76,7 +76,12 @@
     "predictedBurn": "अनुमानित व्यय",
     "realtimeFeed": "रीयल-टाइम फीड",
     "viewAll": "सभी देखें",
-    "automatedIntelligenceShort": "एआई विश्लेषण"
+    "automatedIntelligenceShort": "एआई विश्लेषण",
+    "adminTerminal": "व्यवस्थापक टर्मिनल",
+    "viewerMode": "दर्शक मोड",
+    "protocolOptimal": "प्रोटोकॉल: इष्टतम",
+    "exportCSV": "CSV निर्यात",
+    "exportPDF": "PDF निर्यात"
   },
   "stats": {
     "totalbalance": "कुल शेष",
@@ -226,8 +231,8 @@
   "topbar": {
     "search": "खोजें...",
     "signIn": "साइन इन करें",
-    "guideMe": "गाइड मी",
-    "guideMeShort": "गाइड"
+    "guideMe": "Guide Me",
+    "guideMeShort": "Guide"
   },
   "roles": {
     "admin": "व्यवस्थापक",

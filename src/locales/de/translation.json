@@ -38,7 +38,7 @@
     }
   },
   "dashboard": {
-    "systemDynamics": "Systemdynamik",
+    "systemDynamics": "Finanzübersicht",
     "coreMetrics": "Hochleistungs-Finanzkern v4.0",
     "reports": "Berichte",
     "image": "Bild",
@@ -54,7 +54,12 @@
     "capitalMap": "Kapitalkarte",
     "portfolio": "Portfolio",
     "realtimeFeed": "Echtzeit-Feed",
-    "viewAll": "Alle ansehen"
+    "viewAll": "Alle ansehen",
+    "adminTerminal": "Admin-Terminal",
+    "viewerMode": "Ansichtsmodus",
+    "protocolOptimal": "Protokoll: Optimal",
+    "exportCSV": "CSV-Export",
+    "exportPDF": "PDF-Export"
   },
   "categories": {
     "food": "Essen",
@@ -69,7 +74,7 @@
     "admin": "Admin",
     "viewer": "Zuschauer",
     "signIn": "Anmelden",
-    "guideMe": "System-Guide",
+    "guideMe": "Guide Me",
     "guideMeShort": "Guide"
   }
 }

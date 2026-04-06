@@ -7,7 +7,7 @@
     "settings": "Configuración"
   },
   "dashboard": {
-    "systemDynamics": "Dinámica del sistema",
+    "systemDynamics": "Resumen Financiero",
     "coreMetrics": "Núcleo financiero de alto rendimiento v4.0",
     "reports": "Informes",
     "image": "Imagen",
@@ -23,7 +23,12 @@
     "capitalMap": "Mapa de capital",
     "portfolio": "Portafolio",
     "realtimeFeed": "Feed en tiempo real",
-    "viewAll": "Ver todo"
+    "viewAll": "Ver todo",
+    "adminTerminal": "Terminal de Administrador",
+    "viewerMode": "Modo Espectador",
+    "protocolOptimal": "Protocolo: Óptimo",
+    "exportCSV": "Exportar CSV",
+    "exportPDF": "Exportar PDF"
   },
   "categories": {
     "food": "Comida",
@@ -38,7 +43,7 @@
     "admin": "Administrador",
     "viewer": "Espectador",
     "signIn": "Iniciar Sesión",
-    "guideMe": "Guíame",
+    "guideMe": "Guide Me",
     "guideMeShort": "Guía"
   }
 }

@@ -431,12 +431,16 @@ export default function Dashboard() {
               <div className="flex items-center gap-4 mt-2 mb-2">
                 <div className="flex items-center gap-2 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">{isAdmin ? 'Admin Terminal' : 'Viewer Mode'}</span>
+                  <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">
+                    {isAdmin ? t('dashboard.adminTerminal', 'Admin Terminal') : t('dashboard.viewerMode', 'Viewer Mode')}
+                  </span>
                 </div>
                 {isAdmin && (
                   <div className="flex items-center gap-2 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
                     <ShieldCheck size={10} className="text-indigo-500" />
-                    <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">Protocol: Optimal</span>
+                    <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">
+                      {t('dashboard.protocolOptimal', 'Protocol: Optimal')}
+                    </span>
                   </div>
                 )}
               </div>
@@ -455,13 +459,13 @@ export default function Dashboard() {
                 onClick={exportAsCSV}
                 className="flex items-center gap-2 border border-border rounded-lg px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-[10px] font-black uppercase tracking-widest text-primary shadow-sm"
               >
-                <FileDown size={14} /> Export CSV
+                <FileDown size={14} /> {t('dashboard.exportCSV', 'Export CSV')}
               </button>
               <button 
                 onClick={exportAsPDF}
                 className="flex items-center gap-2 border border-border rounded-lg px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-[10px] font-black uppercase tracking-widest text-primary shadow-sm"
               >
-                <FileText size={14} /> Export PDF
+                <FileText size={14} /> {t('dashboard.exportPDF', 'Export PDF')}
               </button>
             </div>
           )}

@@ -24,7 +24,9 @@ const RATES = {
   INR: 83.0
 };
 
-const MetricSection = ({ title, value, icon: Icon, colorClass, trend, status }) => (
+const MetricSection = ({ title, value, icon: Icon, colorClass, trend, status }) => {
+  const { t } = useTranslation();
+  return (
   <motion.div 
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
@@ -49,9 +51,11 @@ const MetricSection = ({ title, value, icon: Icon, colorClass, trend, status }) 
       <h3 className="text-2xl font-black tracking-tight text-primary tabular-nums font-sans">{value}</h3>
     </div>
   </motion.div>
-);
+  );
+};
 
 const CategoryRow = ({ name, budget, actual, onUpdate, formatValue, type, disabled }) => {
+  const { t } = useTranslation();
   const percent = budget > 0 ? (actual / budget) * 100 : 0;
   const status = percent > 100 ? 'danger' : percent > 80 ? 'warning' : 'safe';
   
