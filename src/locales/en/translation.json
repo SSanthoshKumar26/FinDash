@@ -5,7 +5,38 @@
     "transactions": "Transactions",
     "analytics": "Analytics",
     "insights": "Insights",
+    "planner": "Intelligence Hub",
     "protocols": "Protocols"
+  },
+  "planner": {
+    "title": "Financial Intelligence Hub",
+    "subtitle": "Real-time Fiscal Control Center",
+    "readOnly": "READ ONLY MODE",
+    "liquidInflow": "Strategic Liquid Inflow",
+    "targetBenchmark": "Terminal Target Benchmark",
+    "allocatedBurn": "Allocated Resource Burn",
+    "fiscalSurplus": "Available Fiscal Surplus",
+    "burnIntensity": "Liquidity Burn Intensity",
+    "assetVelocity": "Strategic Asset Velocity",
+    "primaryAllocation": "Primary Infrastructure Allocation",
+    "operationalFlux": "Operational Sector Flux",
+    "predictiveAnalysis": "Predictive Analysis",
+    "allSystemsOptimal": "All systems functioning within operational parameters.",
+    "deficitDetected": "Critical structural deficit detected.",
+    "velocityWarning": "Savings velocity under industry standard (20%).",
+    "targetSuccess": "Savings target successfully initialized.",
+    "limit": "Limit",
+    "actual": "Actual",
+    "velocity": "Velocity",
+    "used": "Used",
+    "categories": {
+      "rent": "Infrastructure",
+      "utilities": "System Utilities",
+      "groceries": "Resource Acquisition",
+      "transport": "Logistics Hub",
+      "entertainment": "Recreational Ops",
+      "miscellaneous": "Ad-hoc Vectors"
+    }
   },
   "dashboard": {
     "systemDynamics": "Financial Overview",
@@ -102,12 +133,37 @@
     "liveFeed": "Live Institutional Feed",
     "sources": "Sources: Global Top 5",
     "strategicPulse": "Strategic Pulse",
-    "resience": "Portfolio Resilience",
+    "resilience": "Portfolio Resilience",
     "overhead": "Capital Overhead",
     "advisory": "Active Advisory",
     "advisoryText": "Market volatility threshold exceeded in Consumer Discretionary sector. Re-balancing suggested.",
     "gateway": "Institutional Gateway",
-    "gatewayDesc": "Direct access to terminal-grade analytical engines and live liquidity streams from global sources."
+    "gatewayDesc": "Direct access to terminal-grade analytical engines and live liquidity streams from global sources.",
+    "feed0": {
+      "source": "Reuters Business",
+      "title": "Global markets stabilize as inflation concerns ease slightly in Q1 reports",
+      "time": "2 mins ago"
+    },
+    "feed1": {
+      "source": "Bloomberg",
+      "title": "Bank of England maintains current interest rates amid mixed labor market data",
+      "time": "15 mins ago"
+    },
+    "feed2": {
+      "source": "CNBC Finance",
+      "title": "New tech IPOs show strong residue of investor confidence in early trading",
+      "time": "42 mins ago"
+    },
+    "feed3": {
+      "source": "Financial Times",
+      "title": "Energy conglomerates pivot towards long-term sustainable infrastructure yields",
+      "time": "1 hour ago"
+    },
+    "feed4": {
+      "source": "Wall Street Journal",
+      "title": "Real estate sectors in major hubs see shift towards hybrid-usage portfolios",
+      "time": "3 hours ago"
+    }
   },
   "protocols": {
     "status": "Operational Status: Optimal",
@@ -186,7 +242,9 @@
   },
   "topbar": {
     "search": "Search...",
-    "signIn": "Sign In"
+    "signIn": "Sign In",
+    "guideMe": "Guide Me",
+    "guideMeShort": "Guide"
   },
   "roles": {
     "admin": "Admin",

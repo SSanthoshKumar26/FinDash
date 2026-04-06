@@ -45,7 +45,7 @@ const MetricSection = ({ title, value, icon: Icon, colorClass, trend, status }) 
       )}
     </div>
     <div>
-      <p className="text-muted text-[10px] font-black uppercase tracking-widest mb-1 opacity-60 font-sans">{title}</p>
+      <p className="text-muted text-[10px] font-black uppercase tracking-widest mb-1 opacity-60 font-sans">{t(`planner.${title.toLowerCase().replace(/\s/g, '')}`, title)}</p>
       <h3 className="text-2xl font-black tracking-tight text-primary tabular-nums font-sans">{value}</h3>
     </div>
   </motion.div>
@@ -61,12 +61,12 @@ const CategoryRow = ({ name, budget, actual, onUpdate, formatValue, type, disabl
          <div className={`p-2 rounded-lg ${type === 'fixed' ? 'bg-indigo-500/10 text-indigo-400' : 'bg-amber-500/10 text-amber-400'} border border-current/10`}>
             {type === 'fixed' ? <ShieldCheck size={16} /> : <Zap size={16} />}
          </div>
-         <h4 className="text-xs font-black uppercase tracking-widest text-primary font-sans">{name}</h4>
+         <h4 className="text-xs font-black uppercase tracking-widest text-primary font-sans">{t(`planner.categories.${name.toLowerCase()}`, name)}</h4>
       </div>
       
       <div className="lg:col-span-5 grid grid-cols-2 gap-3">
         <div className="relative">
-          <p className="text-[8px] font-black uppercase tracking-widest text-muted mb-1.5 ml-1">Limit</p>
+          <p className="text-[8px] font-black uppercase tracking-widest text-muted mb-1.5 ml-1">{t('planner.limit', 'Limit')}</p>
           <input 
             type="number" 
             value={budget === 0 ? '' : budget}
@@ -77,7 +77,7 @@ const CategoryRow = ({ name, budget, actual, onUpdate, formatValue, type, disabl
           />
         </div>
         <div className="relative">
-          <p className="text-[8px] font-black uppercase tracking-widest text-muted mb-1.5 ml-1">Actual</p>
+          <p className="text-[8px] font-black uppercase tracking-widest text-muted mb-1.5 ml-1">{t('planner.actual', 'Actual')}</p>
           <input 
             type="number" 
             value={actual === 0 ? '' : actual}
@@ -91,7 +91,7 @@ const CategoryRow = ({ name, budget, actual, onUpdate, formatValue, type, disabl
 
       <div className="lg:col-span-4 space-y-2">
          <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest leading-none">
-           <span className="text-muted/60">Velocity</span>
+           <span className="text-muted/60">{t('planner.velocity', 'Velocity')}</span>
            <span className={status === 'danger' ? 'text-rose-500' : status === 'warning' ? 'text-amber-500' : 'text-emerald-500'}>
              {percent.toFixed(0)}% <span className="text-muted/30 ml-1">({formatValue(Math.max(0, budget - actual))})</span>
            </span>
@@ -171,9 +171,9 @@ export default function Planner() {
     const burnRate = incomeVal > 0 ? (totalActual / incomeVal) * 100 : 0;
     
     const insights = [];
-    if (surplus < 0) insights.push({ color: 'text-rose-500', text: `Critical structural deficit detected.` });
-    if (savingsRate < 20) insights.push({ color: 'text-amber-500', text: `Savings velocity under industry standard (20%).` });
-    if (surplus >= goalVal && goalVal > 0) insights.push({ color: 'text-emerald-500', text: `Savings target successfully initialized.` });
+    if (surplus < 0) insights.push({ color: 'text-rose-500', text: t('planner.deficitDetected', 'Critical structural deficit detected.') });
+    if (savingsRate < 20) insights.push({ color: 'text-amber-500', text: t('planner.velocityWarning', 'Savings velocity under industry standard (20%).') });
+    if (surplus >= goalVal && goalVal > 0) insights.push({ color: 'text-emerald-500', text: t('planner.targetSuccess', 'Savings target successfully initialized.') });
 
     const chartData = Object.entries({...fixedData, ...variableData})
       .map(([name, val]) => ({ name, value: val.actual }));
@@ -230,7 +230,7 @@ export default function Planner() {
       <section id="planner-inputs" className="border border-white/10 p-6 rounded-xl bg-black/5 overflow-hidden">
          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
-               <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 font-sans">Strategic Liquid Inflow</label>
+               <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 font-sans">{t('planner.liquidInflow', 'Strategic Liquid Inflow')}</label>
                <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted/50 border-r border-white/10 pr-3">
                      {currency === 'INR' ? <IndianRupee size={16} /> : currency === 'EUR' ? <Euro size={16} /> : <DollarSign size={16} />}
@@ -246,7 +246,7 @@ export default function Planner() {
                </div>
             </div>
             <div className="space-y-3">
-               <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 font-sans">Terminal Target Benchmark</label>
+               <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 font-sans">{t('planner.targetBenchmark', 'Terminal Target Benchmark')}</label>
                <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted/50 border-r border-white/10 pr-3">
                      <Target size={16} />
@@ -266,10 +266,10 @@ export default function Planner() {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-         <MetricSection title="Allocated Resource Burn" value={formatValue(calculations.totalActual)} icon={BarChart3} colorClass="rose-500" status={calculations.burnRate > 80 ? 'warning' : 'safe'} />
-         <MetricSection title="Available Fiscal Surplus" value={formatValue(calculations.surplus)} icon={Wallet} colorClass="emerald-500" status={calculations.surplus < 0 ? 'danger' : 'safe'} />
-         <MetricSection title="Liquidity Burn Intensity" value={`${calculations.burnRate.toFixed(0)}%`} icon={Activity} colorClass="amber-500" />
-         <MetricSection title="Strategic Asset Velocity" value={`${calculations.savingsRate.toFixed(0)}%`} icon={TrendingUp} colorClass="indigo-500" />
+         <MetricSection title={t('planner.allocatedBurn', 'Allocated Resource Burn')} value={formatValue(calculations.totalActual)} icon={BarChart3} colorClass="rose-500" status={calculations.burnRate > 80 ? 'warning' : 'safe'} />
+         <MetricSection title={t('planner.fiscalSurplus', 'Available Fiscal Surplus')} value={formatValue(calculations.surplus)} icon={Wallet} colorClass="emerald-500" status={calculations.surplus < 0 ? 'danger' : 'safe'} />
+         <MetricSection title={t('planner.burnIntensity', 'Liquidity Burn Intensity')} value={`${calculations.burnRate.toFixed(0)}%`} icon={Activity} colorClass="amber-500" />
+         <MetricSection title={t('planner.assetVelocity', 'Strategic Asset Velocity')} value={`${calculations.savingsRate.toFixed(0)}%`} icon={TrendingUp} colorClass="indigo-500" />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
@@ -277,7 +277,7 @@ export default function Planner() {
             <div className="p-5 border-b border-white/10 bg-white/[0.02]">
                <h2 className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 font-sans">
                   <ShieldCheck size={16} className="text-indigo-400" />
-                  Primary Infrastructure Allocation
+                  {t('planner.primaryAllocation', 'Primary Infrastructure Allocation')}
                </h2>
             </div>
             <div className="flex flex-col">
@@ -289,7 +289,7 @@ export default function Planner() {
             <div className="p-5 border-b border-t border-white/10 bg-white/[0.02]">
                <h2 className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 font-sans">
                   <Zap size={16} className="text-amber-400" />
-                  Operational Sector Flux
+                  {t('planner.operationalFlux', 'Operational Sector Flux')}
                </h2>
             </div>
             <div className="flex flex-col">
@@ -303,7 +303,7 @@ export default function Planner() {
             <div id="planner-insights" className="border border-white/10 p-6 rounded-xl bg-black/5">
                <h3 className="text-[10px] font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2 border-b border-white/5 pb-4 font-sans">
                   <Lightbulb size={14} className="text-indigo-400" />
-                  Predictive Analysis
+                  {t('planner.predictiveAnalysis', 'Predictive Analysis')}
                </h3>
                <div className="space-y-4">
                   {calculations.insights.length > 0 ? calculations.insights.map((insight, i) => (
@@ -312,7 +312,7 @@ export default function Planner() {
                        <p className={`text-[10px] uppercase font-black tracking-widest leading-relaxed ${insight.color} font-sans`}>{insight.text}</p>
                     </div>
                   )) : (
-                    <p className="text-[10px] uppercase font-black text-muted tracking-widest text-center py-6 italic font-sans opacity-40">All systems functioning within operational parameters.</p>
+                    <p className="text-[10px] uppercase font-black text-muted tracking-widest text-center py-6 italic font-sans opacity-40">{t('planner.allSystemsOptimal', 'All systems functioning within operational parameters.')}</p>
                   )}
                </div>
             </div>
@@ -341,7 +341,7 @@ export default function Planner() {
                   </ResponsiveContainer>
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                      <span className="text-xl font-black text-primary font-sans">{calculations.burnRate.toFixed(0)}%</span>
-                     <span className="text-[8px] font-black text-muted uppercase tracking-widest font-sans">Used</span>
+                     <span className="text-[8px] font-black text-muted uppercase tracking-widest font-sans">{t('planner.used', 'Used')}</span>
                   </div>
                </div>
 

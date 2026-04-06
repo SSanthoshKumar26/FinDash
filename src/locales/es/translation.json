@@ -36,6 +36,9 @@
   "topbar": {
     "search": "Buscar...",
     "admin": "Administrador",
-    "viewer": "Espectador"
+    "viewer": "Espectador",
+    "signIn": "Iniciar Sesión",
+    "guideMe": "Guíame",
+    "guideMeShort": "Guía"
   }
 }

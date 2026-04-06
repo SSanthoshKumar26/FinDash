@@ -212,11 +212,11 @@ export default function Topbar({ toggleSidebar }) {
           {/* Guide Me — Replay Onboarding */}
           <button 
             onClick={() => useStore.getState().startOnboarding()}
-            className="flex items-center gap-2 px-3 py-2 bg-primary/10 border border-primary/20 text-primary rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-2 bg-primary/10 border border-primary/20 text-primary rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all cursor-pointer shadow-sm active:scale-95"
           >
-            <Play size={10} fill="currentColor" />
-            <span className="hidden xs:inline">Guide Me</span>
-            <span className="xs:hidden">?</span>
+            <Play size={10} fill="currentColor" className="shrink-0" />
+            <span className="hidden sm:inline">{t('topbar.guideMe', 'Guide Me')}</span>
+            <span className="sm:hidden">{t('topbar.guideMeShort', 'Guide')}</span>
           </button>
 
           {/* Separator — md+ */}

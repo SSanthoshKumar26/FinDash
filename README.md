@@ -12,43 +12,44 @@ The platform is powered by **FinDash AI**, a context-aware assistant providing d
 
 ---
 
-## 🔥 Strategic functional Nodes (Key Features)
+## 🔥 Strategic Functional Nodes (Key Features)
 
 ### 1. 🤖 FinDash AI (Deep Context Integration)
 A deeply integrated intelligent assistant that understands your entire financial ecosystem.
 - **Context-Aware**: Understands exactly which module is active (Dashboard, Planner, or Analytics) and tailors its responses based on the live dataset.
 - **Natural Language Analysis**: Interpret your balance, top spending categories, and burn rate via simple chat queries.
 
-### 2. 🛡️ Multi-Tier RBAC (Role-Based Access Control)
-Strict enforcement of operational permissions to simulate a secure enterprise environment:
-- **Admin Root Access**: Full CRUD capability on all transactions and budgets. Access to advanced analytics (Risk Radar, Burn Velocity).
-- **Viewer Mode**: A strictly read-only experience. Modifier functions are locked, and transaction data is truncated to protect core ledger privacy.
+### 2. 🎡 Infinity Intelligence Ticker (Real-Time Feed)
+- **Seamless Data Flow**: A high-velocity, framer-motion powered infinity scroll ticker that provides real-time financial insights.
+- **Dynamic Synthesis**: Analyzes spending efficiency, account summaries, and alert thresholds on-the-fly, presenting only the most actionable intelligence.
+- **Premium UI**: Features "Anti-clipping" edge-fade gradients for a cinematic, terminal-grade visual flow.
 
-### 3. 📊 Deterministic Data Architecture (100% Real-Time)
-- **Zero-Base Calibration**: All dashboard metrics (Total Balance, Income, Expenses) are derived 100% from the transaction history—no hardcoded starting balances.
-- **Real-Time Synthesis**: Every addition, deletion, or edit in the ledger propagates instantly across all charts and stat-cards.
-- **Analytics Integrity**: Radar Charts and Heatmaps now use deterministic frequency-hash algorithms instead of random generators, ensuring mathematical consistency.
+### 3. 📈 Forecasting Matrix (Enhanced Analytics Hub)
+- **Capital Runway Analysis**: Automated projection of financial stability (Months/Weeks) based on historical burn-rate and inflow velocity.
+- **Structural Distribution**: A multi-dimensional Radar and Donut analysis of asset allocation and regional market exposure.
+- **Reactive Centering**: Graphs are mathematically centered for optimal visual balance across all screen resolutions.
 
-### 4. 🧭 Intelligence Guided Onboarding
-- **Multi-Stage Walkthrough**: A high-fidelity spotlight navigation system that ensures new users achieve operational mastery across every functional node.
+### 4. 🌓 Dual-Theme Intelligence (Light/Dark Mastery)
+- **High-Contrast Polish**: A custom-engineered theme engine that ensures 100% visibility for text, numbers, and graph components.
+- **Reactive Recharts**: Chart grids, axis labels, and tooltip backgrounds instantly toggle their alpha-transparency and hex-colors to maintain perfect legibility in both environments.
 
 ### 5. 📧 Intelligence Dispatch & Multi-Format Synthesis
-- **Decoupled PDF Engine**: A stability-first architecture that renders a separate, simplified report template off-screen to ensure 100% PDF compatibility without modern CSS artifacts.
-- **Professional Filename Mapping**: Automated, unique, and enterprise-grade file naming (e.g., `FinDash_Intelligence_Dossier_[Timestamp].pdf`).
-- **High-Contrast Terminal Loading**: A professional terminal-style loading interface with vertically scanning laser effects and 95% opacity to ensure zero background interference.
+- **Decoupled PDF Engine**: A stability-first architecture that renders a separate, simplified report template off-screen to ensure 100% PDF compatibility without modern CSS artifacts (glassmorphism/blur).
+- **Professional Filename Mapping**: Automated, unique file naming (e.g., `FinDash_Intelligence_Dossier_[Timestamp].pdf`).
 
 ---
 
 ## 🏛️ System Architecture
 
-### 📊 PDF synthesis Node (Stability-First)
+### 📊 Deterministic Data Architecture (100% Real-Time)
+- **Zero-Base Calibration**: All metrics (Total Balance, Income, Expenses) are derived 100% from the transaction history—no hardcoded starting balances.
+- **Real-Time Synthesis**: Every addition, deletion, or edit in the ledger propagates instantly across all charts and stat-cards via a unified Zustand state manager.
+- **Analytics Integrity**: Radar Charts and Heatmaps use deterministic frequency-hash algorithms instead of random generators, ensuring mathematical consistency.
+
+### 📊 PDF Synthesis Node (Stability-First)
 To solve the "Modern CSS vs Canvas" conflict:
 - **UI Node**: High-fidelity glassmorphism, `oklch` colors, and blur filters for the live user experience.
-- **Export Node**: A hidden, static HTML component with standard HEX/RGB colors and solid backgrounds. This ensures `html2canvas` captures a perfect, error-free snapshot every time.
-
-### 📈 Recharts Calibration
-- **Stability Wrappers**: Every visualization uses `ResponsiveContainer` wrapped in defensive `min-h` containers to prevent dimension-zero calculation errors during component mounting.
-- **Deterministic Metrics**: Radar charts map performance based on **Savings Rate**, **Stability**, **Diversity**, and **Activity Volume** instead of static mocks.
+- **Export Node**: A hidden, static HTML component with standard HEX/RGB colors and solid backgrounds for error-free captures.
 
 ---
 
@@ -76,9 +77,9 @@ zorvyn/finance-dashboard/
 │   ├── lib/                # Technical utilities & formatting
 │   ├── locales/            # i18n Translation JSON (EN, HI, FR)
 │   ├── pages/              # Core Functional Nodes
-│   │   ├── Dashboard/      # Main Intel Hub
-│   │   ├── Analytics/      # Deep Matrix Analysis
-│   │   ├── Transactions/   # Ledger Management
+│   │   ├── Dashboard/      # Main Intel Hub (w/ Infinity Ticker)
+│   │   ├── Analytics/      # Deep Matrix Analysis & Forecasting
+│   │   ├── Transactions/   # Ledger Management & Exporting
 │   │   └── Planner/        # Fiscal Budgeting Node
 │   ├── store.js            # Unified State Architecture (Zustand)
 │   ├── App.jsx             # Router & Interface Registry

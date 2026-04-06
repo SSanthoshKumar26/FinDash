@@ -5,7 +5,38 @@
     "transactions": "लेन-देन",
     "analytics": "एनालिटिक्स",
     "insights": "इनसाइट्स",
+    "planner": "इंटेलिजेंस हब",
     "protocols": "प्रोटोकॉल"
+  },
+  "planner": {
+    "title": "वित्तीय इंटेलिजेंस हब",
+    "subtitle": "रीयल-टाइम वित्तीय नियंत्रण केंद्र",
+    "readOnly": "केवल पढ़ने के लिए मोड",
+    "liquidInflow": "रणनीतिक तरल प्रवाह",
+    "targetBenchmark": "टर्मिनल लक्ष्य बेंचमार्क",
+    "allocatedBurn": "आवंटित संसाधन व्यय",
+    "fiscalSurplus": "उपलब्ध वित्तीय अधिशेष",
+    "burnIntensity": "तरलता व्यय तीव्रता",
+    "assetVelocity": "रणनीतिक संपत्ति वेग",
+    "primaryAllocation": "प्राथमिक बुनियादी ढांचा आवंटन",
+    "operationalFlux": "परिचालन क्षेत्र प्रवाह",
+    "predictiveAnalysis": "भविष्य कहने वाला विश्लेषण",
+    "allSystemsOptimal": "सभी सिस्टम परिचालन मापदंडों के भीतर काम कर रहे हैं।",
+    "deficitDetected": "गंभीर संरचनात्मक घाटा पाया गया।",
+    "velocityWarning": "बचत वेग उद्योग मानक (20%) से कम है।",
+    "targetSuccess": "बचत लक्ष्य सफलतापूर्वक प्रारंभ किया गया।",
+    "limit": "सीमा",
+    "actual": "वास्तविक",
+    "velocity": "वेग",
+    "used": "प्रयुक्त",
+    "categories": {
+      "rent": "बुनियादी ढांचा",
+      "utilities": "सिस्टम उपयोगिताएँ",
+      "groceries": "संसाधन अधिग्रहण",
+      "transport": "रसद हब",
+      "entertainment": "मनोरंजन संचालन",
+      "miscellaneous": "तदर्थ वेक्टर"
+    }
   },
   "dashboard": {
     "systemDynamics": "वित्तीय सिंहावलोकन",
@@ -108,7 +139,7 @@
     "liveFeed": "लाइव संस्थागत फीड",
     "sources": "स्रोत: ग्लोबल टॉप 5",
     "strategicPulse": "रणनीतिक पल्स",
-    "resience": "पोर्टफोलियो लचीलापन",
+    "resilience": "पोर्टफोलियो लचीलापन",
     "overhead": "पूंजी अधिभार",
     "advisory": "सक्रिय सलाह",
     "advisoryText": "उपभोक्ता क्षेत्र में बाजार में उतार-चढ़ाव की सीमा पार हो गई है। पुनर्संतुलन का सुझाव दिया गया है।",
@@ -194,7 +225,9 @@
   },
   "topbar": {
     "search": "खोजें...",
-    "signIn": "साइन इन करें"
+    "signIn": "साइन इन करें",
+    "guideMe": "गाइड मी",
+    "guideMeShort": "गाइड"
   },
   "roles": {
     "admin": "व्यवस्थापक",

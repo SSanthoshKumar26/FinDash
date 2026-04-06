@@ -4,7 +4,38 @@
     "transactions": "Transaktionen",
     "analytics": "Analysen",
     "insights": "Einblicke",
+    "planner": "Intelligence Hub",
     "settings": "Einstellungen"
+  },
+  "planner": {
+    "title": "Finanzielle Intelligenz-Zentrale",
+    "subtitle": "Echtzeit-Steuerungszentrum",
+    "readOnly": "NUR LESE-MODUS",
+    "liquidInflow": "Strategischer Kapitalzufluss",
+    "targetBenchmark": "Terminalziel-Benchmark",
+    "allocatedBurn": "Zuweisungs-Ressourcenverbrauch",
+    "fiscalSurplus": "Verfügbarer Fiskalüberschuss",
+    "burnIntensity": "Liquiditätsverbrauchs-Intensität",
+    "assetVelocity": "Strategische Asset-Geschwindigkeit",
+    "primaryAllocation": "Primäre Infrastrukturallokation",
+    "operationalFlux": "Operationaler Sektor-Fluss",
+    "predictiveAnalysis": "Prädiktive Analyse",
+    "allSystemsOptimal": "Alle Systeme arbeiten innerhalb der Betriebsparameter.",
+    "deficitDetected": "Kritischer struktureller Defizit erkannt.",
+    "velocityWarning": "Spar-Geschwindigkeit unter Industriestandard (20%).",
+    "targetSuccess": "Sparziel erfolgreich initialisiert.",
+    "limit": "Limit",
+    "actual": "Aktuell",
+    "velocity": "Geschwindigkeit",
+    "used": "Verbraucht",
+    "categories": {
+      "rent": "Infrastruktur",
+      "utilities": "System-Dienstprogramme",
+      "groceries": "Ressourcenbeschaffung",
+      "transport": "Logistikzentrum",
+      "entertainment": "Freizeitaktivitäten",
+      "miscellaneous": "Ad-hoc-Vektoren"
+    }
   },
   "dashboard": {
     "systemDynamics": "Systemdynamik",
@@ -36,6 +67,9 @@
   "topbar": {
     "search": "Suchen...",
     "admin": "Admin",
-    "viewer": "Zuschauer"
+    "viewer": "Zuschauer",
+    "signIn": "Anmelden",
+    "guideMe": "System-Guide",
+    "guideMeShort": "Guide"
   }
 }

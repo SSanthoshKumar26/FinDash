@@ -5,7 +5,38 @@
     "transactions": "Transactions",
     "analytics": "Analytique",
     "insights": "Aperçus",
+    "planner": "Hub d’Intelligence",
     "protocols": "Protocoles"
+  },
+  "planner": {
+    "title": "Hub d'Intelligence Financière",
+    "subtitle": "Centre de Contrôle Budgétaire en Temps Réel",
+    "readOnly": "MODE LECTURE SEULE",
+    "liquidInflow": "Flux de Trésorerie Stratégique",
+    "targetBenchmark": "Objectif de Référence Terminal",
+    "allocatedBurn": "Consommation des Ressources Allouées",
+    "fiscalSurplus": "Surplus Fiscal Disponible",
+    "burnIntensity": "Intensité de Consommation",
+    "assetVelocity": "Vélocité Stratégique des Actifs",
+    "primaryAllocation": "Allocation d'Infrastructure Primaire",
+    "operationalFlux": "Flux Sectoriel Opérationnel",
+    "predictiveAnalysis": "Analyse Prédictive",
+    "allSystemsOptimal": "Tous les systèmes fonctionnent selon les paramètres opérationnels.",
+    "deficitDetected": "Déficit structurel critique détecté.",
+    "velocityWarning": "Vitesse d'épargne inférieure à la norme (20%).",
+    "targetSuccess": "Objectif d'épargne initialisé avec succès.",
+    "limit": "Limite",
+    "actual": "Réel",
+    "velocity": "Vélocité",
+    "used": "Utilisé",
+    "categories": {
+      "rent": "Infrastructure",
+      "utilities": "Services Publics",
+      "groceries": "Acquisition de Ressources",
+      "transport": "Logistique",
+      "entertainment": "Ops Récréatives",
+      "miscellaneous": "Vecteurs Ad-hoc"
+    }
   },
   "dashboard": {
     "systemDynamics": "Vue d'ensemble financière",
@@ -108,7 +139,7 @@
     "liveFeed": "Flux institutionnel en direct",
     "sources": "Sources : Top 5 mondial",
     "strategicPulse": "Pouls Stratégique",
-    "resience": "Résilience du Portefeuille",
+    "resilience": "Résilience du Portefeuille",
     "overhead": "Coûts fixes de capital",
     "advisory": "Conseil Actif",
     "advisoryText": "Seuil de volatilité du marché dépassé dans le secteur de la consommation discrétionnaire. Rééquilibrage suggéré.",
@@ -197,7 +228,9 @@
   },
   "topbar": {
     "search": "Rechercher...",
-    "signIn": "Se Connecter"
+    "signIn": "Se Connecter",
+    "guideMe": "Guide-moi",
+    "guideMeShort": "Guide"
   },
   "roles": {
     "admin": "Admin",
