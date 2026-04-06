@@ -1,7 +1,9 @@
 # 🚀 FinDash - Elite Financial Intelligence Terminal
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-emerald?style=for-the-badge&logo=vercel)](https://findash-zorvyn.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-emerald?style=for-the-badge&logo=vercel)](https://fin-dash-six-gamma.vercel.app/)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-indigo?style=for-the-badge&logo=github)](https://github.com/SSanthoshKumar26/FinDash)
+
+**🌍 Live Deployment:** [https://fin-dash-six-gamma.vercel.app/](https://fin-dash-six-gamma.vercel.app/)
 
 ## 💎 Project Overview
 **FinDash** is a high-performance, professional financial terminal designed for enterprise-grade data visualization and personal wealth management. Built with a "Terminal First" aesthetic, it prioritizes structured data, real-time intelligence flow, and an ultra-premium technical experience.
