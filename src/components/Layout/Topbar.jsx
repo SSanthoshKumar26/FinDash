@@ -1,4 +1,4 @@
-import { Bell, Moon, Sun, Menu, Shield, Eye, EyeOff, Globe, Coins, Activity, Cpu, Mail, Lock, X, Play } from 'lucide-react';
+import { Bell, Moon, Sun, Menu, Shield, Eye, EyeOff, Globe, Coins, Activity, Cpu, Mail, Lock as LockIcon, X, Play } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../../store';
@@ -85,7 +85,7 @@ const SignInModal = ({ isOpen, onClose }) => {
                 <div className="space-y-2">
                   <label className="text-[9px] font-bold uppercase tracking-wider text-muted-color">{t('auth.password', 'Master Key')}</label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
+                    <LockIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
                     <input 
                       type="password" 
                       value={password}

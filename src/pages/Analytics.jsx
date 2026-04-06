@@ -21,18 +21,21 @@ const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'
 
 const CustomTooltip = ({ active, payload, label, dropdownOpen }) => {
   const { t } = useTranslation();
+  const { theme } = useStore();
+  const isDark = theme === 'dark';
+  
   if (active && payload && payload.length && !dropdownOpen) {
     return (
-      <div className="bg-[#0f0f0f] border border-white/20 p-4 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,1)] z-[1000] relative">
-        <p className="text-[10px] font-bold text-white/40 uppercase mb-3 border-b border-white/5 pb-2">{label} {t('analytics.forecast', 'Forecast')}</p>
+      <div className={`${isDark ? 'bg-[#0f0f0f] border-white/20' : 'bg-white border-black/10 shadow-xl'} border p-4 rounded-xl z-[1000] relative`}>
+        <p className={`text-[10px] font-bold uppercase mb-3 border-b ${isDark ? 'text-white/40 border-white/5' : 'text-black/40 border-black/5'} pb-2`}>{label} {t('analytics.forecast', 'Forecast')}</p>
         <div className="space-y-2">
           {payload.map((entry, index) => (
             <div key={index} className="flex items-center justify-between gap-10">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: entry.color }} />
-                <span className="text-[10px] font-bold text-white/60 uppercase">{entry.name}</span>
+                <span className={`text-[10px] font-bold uppercase ${isDark ? 'text-white/60' : 'text-black/60'}`}>{entry.name}</span>
               </div>
-              <span className="text-xs font-bold text-white tabular-nums">
+              <span className={`text-xs font-bold tabular-nums ${isDark ? 'text-white' : 'text-black'}`}>
                 ${entry.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
             </div>
@@ -45,14 +48,14 @@ const CustomTooltip = ({ active, payload, label, dropdownOpen }) => {
 };
 
 export default function Analytics() {
-  const { transactions } = useStore();
+  const { transactions, role, theme } = useStore();
+  const isDark = theme === 'dark';
   const { t } = useTranslation();
   const [chartType, setChartType] = useState(() => localStorage.getItem('analyticsChartType') || 'area');
   const [timeRange, setTimeRange] = useState('monthly');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [isDropdownOpen, setIsDropdownOpen] = useState(null);
   const [lastSync, setLastSync] = useState(new Date().toLocaleTimeString());
-  const [role, setRole] = useState('admin'); // 'admin' or 'viewer'
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -136,23 +139,23 @@ export default function Analytics() {
       case 'bar':
         return (
           <BarChart data={chartData.trend} syncId="analyticsSync" {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 700 }} dy={10} />
+            <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} vertical={false} />
+            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 10, fontWeight: 700 }} dy={10} />
             <YAxis hide />
             <Tooltip content={<CustomTooltip dropdownOpen={isDropdownOpen === 'type'} />} cursor={false} />
             <Bar dataKey="income" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={24} name={t('analytics.income', 'Income')} />
-            <Bar dataKey="expenses" fill="rgba(255,255,255,0.1)" radius={[4, 4, 0, 0]} barSize={24} name={t('analytics.expenses', 'Expenses')} />
+            <Bar dataKey="expenses" fill={isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} radius={[4, 4, 0, 0]} barSize={24} name={t('analytics.expenses', 'Expenses')} />
           </BarChart>
         );
       case 'line':
         return (
           <LineChart data={chartData.trend} syncId="analyticsSync" {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 700 }} dy={10} />
+            <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} vertical={false} />
+            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 10, fontWeight: 700 }} dy={10} />
             <YAxis hide />
             <Tooltip content={<CustomTooltip dropdownOpen={isDropdownOpen === 'type'} />} cursor={false} />
-            <Line type="monotone" dataKey="income" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, fill: '#6366f1' }} activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }} name={t('analytics.income', 'Income')} />
-            <Line type="monotone" dataKey="expenses" stroke="rgba(255,255,255,0.2)" strokeWidth={3} dot={{ r: 4, fill: 'rgba(255,255,255,0.2)' }} name={t('analytics.expenses', 'Expenses')} />
+            <Line type="monotone" dataKey="income" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, fill: '#6366f1' }} activeDot={{ r: 6, stroke: isDark ? '#fff' : '#000', strokeWidth: 2 }} name={t('analytics.income', 'Income')} />
+            <Line type="monotone" dataKey="expenses" stroke={isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"} strokeWidth={3} dot={{ r: 4, fill: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)" }} name={t('analytics.expenses', 'Expenses')} />
           </LineChart>
         );
       case 'pie':
@@ -167,7 +170,7 @@ export default function Analytics() {
               outerRadius={100}
               paddingAngle={5}
               dataKey="value"
-              stroke="#0c0c0c"
+              stroke={isDark ? "#0c0c0c" : "#fff"}
               strokeWidth={2}
             >
               {chartData.categories.map((entry, index) => (
@@ -180,10 +183,10 @@ export default function Analytics() {
       case 'radar':
         return (
           <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData.trend}>
-            <PolarGrid stroke="rgba(255,255,255,0.1)" />
-            <PolarAngleAxis dataKey="name" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 700 }} />
+            <PolarGrid stroke={isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} />
+            <PolarAngleAxis dataKey="name" tick={{ fill: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 10, fontWeight: 700 }} />
             <Radar name={t('analytics.income', 'Income')} dataKey="income" stroke="#6366f1" strokeWidth={2} fill="#6366f1" fillOpacity={0.3} />
-            <Radar name={t('analytics.expenses', 'Expenses')} dataKey="expenses" stroke="rgba(255,255,255,0.2)" strokeWidth={2} fill="rgba(255,255,255,0.2)" fillOpacity={0.1} />
+            <Radar name={t('analytics.expenses', 'Expenses')} dataKey="expenses" stroke={isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"} strokeWidth={2} fill={isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"} fillOpacity={0.1} />
             <Tooltip content={<CustomTooltip dropdownOpen={isDropdownOpen === 'type'} />} />
           </RadarChart>
         );
@@ -197,80 +200,80 @@ export default function Analytics() {
                 <stop offset="100%" stopColor="#6366f1" stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 700 }} dy={10} />
+            <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} vertical={false} />
+            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 10, fontWeight: 700 }} dy={10} />
             <YAxis hide />
             <Tooltip content={<CustomTooltip dropdownOpen={isDropdownOpen === 'type'} />} cursor={false} />
-            <Area type="monotone" dataKey="income" stroke="#6366f1" strokeWidth={3} fill="url(#areaInc)" activeDot={{ r: 6, fill: '#fff' }} name={t('analytics.income', 'Income')} />
-            <Area type="monotone" dataKey="expenses" stroke="rgba(255,255,255,0.1)" fill="transparent" name={t('analytics.expenses', 'Expenses')} />
+            <Area type="monotone" dataKey="income" stroke="#6366f1" strokeWidth={3} fill="url(#areaInc)" activeDot={{ r: 6, fill: isDark ? '#fff' : '#000' }} name={t('analytics.income', 'Income')} />
+            <Area type="monotone" dataKey="expenses" stroke={isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} fill="transparent" name={t('analytics.expenses', 'Expenses')} />
           </AreaChart>
         );
     }
   };
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700 pb-20 max-w-[1700px] mx-auto overflow-x-hidden px-3 sm:px-6 lg:px-8 pt-4">
+    <div className="space-y-6 animate-in fade-in duration-700 pb-16 max-w-[1700px] mx-auto overflow-x-hidden px-3 sm:px-6 lg:px-8 pt-4">
       {/* Unique Analytics Header */}
-      <header id="analytics-hero" className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+      <header id="analytics-hero" className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
              <div className="p-2.5 bg-indigo-500 rounded-2xl shadow-[0_0_30px_rgba(99,102,241,0.4)]">
                 <Target size={22} className="text-white" />
              </div>
              <div>
-               <h1 className="text-3xl font-black tracking-tight text-white uppercase italic">{t('analytics.forecastingHub', 'Forecasting Hub')}</h1>
+               <h1 className="text-3xl font-black tracking-tight text-primary uppercase italic">{t('analytics.forecastingHub', 'Forecasting Hub')}</h1>
                <p className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.3em] mt-1">{t('analytics.forecastingSubtitle', 'Advanced Quantitative Intelligence')}</p>
              </div>
           </div>
           <div className="flex gap-2">
-             <div className="px-4 py-1.5 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2">
-                <ShieldCheck size={12} className={role === 'admin' ? 'text-emerald-500' : 'text-amber-500'} />
-                <span className="text-[10px] font-black text-white uppercase tracking-widest">{role === 'admin' ? 'Root Access' : 'Restricted Node'}</span>
+             <div className="px-4 py-1.5 rounded-xl bg-panel border border-border flex items-center gap-2">
+                <ShieldCheck size={12} className={role === 'Admin' ? 'text-emerald-500' : 'text-amber-500'} />
+                <span className="text-[10px] font-black text-primary uppercase tracking-widest">{role === 'Admin' ? 'Root Access' : 'Restricted Node'}</span>
              </div>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
-           {role === 'admin' && (
-             <div className="flex items-center gap-2 bg-black border border-white/10 p-1 rounded-xl ring-1 ring-white/5">
+           {role === 'Admin' && (
+             <div className="flex items-center gap-2 bg-background border border-border p-1 rounded-xl">
               {['monthly', 'weekly'].map((range) => (
                 <button 
                   key={range}
                   onClick={() => setTimeRange(range)}
-                  className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase transition-all ${timeRange === range ? 'bg-white text-black shadow-2xl' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                  className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase transition-all ${timeRange === range ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'text-muted hover:text-primary hover:bg-panel'}`}
                 >
                   {t(`analytics.${range}`, range === 'monthly' ? 'Monthly' : 'Weekly')}
                 </button>
               ))}
             </div>
            )}
-          <div className="h-10 w-px bg-white/10 mx-2 hidden md:block" />
-          <div className="flex items-center gap-3 px-5 py-3 bg-[#080808] border border-white/10 rounded-2xl shadow-inner relative overflow-hidden group">
+          <div className="h-10 w-px bg-border mx-2 hidden md:block" />
+          <div className="flex items-center gap-3 px-5 py-3 bg-background border border-border rounded-2xl shadow-inner relative overflow-hidden group">
              <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] relative" />
-             <span className="text-[10px] font-black text-white/60 uppercase tracking-tighter relative">{t('analytics.synced', 'Node Sync')}: <span className="text-white">{lastSync}</span></span>
+             <span className="text-[10px] font-black text-muted uppercase tracking-tighter relative">{t('analytics.synced', 'Node Sync')}: <span className="text-primary">{lastSync}</span></span>
           </div>
         </div>
       </header>
 
       {/* Analytical Metrics */}
-      <div id="analytics-metrics" className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8 mb-12">
-        <div className="glass-panel p-8 rounded-2xl border border-white/5 bg-gradient-to-br from-indigo-500/[0.03] to-transparent relative overflow-hidden group">
-          <div className="flex justify-between items-start mb-12">
-            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-indigo-400 group-hover:scale-110 transition-transform">
-              <Timer size={24} strokeWidth={1} />
+      <div id="analytics-metrics" className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-10">
+        <div className="glass-panel p-6 rounded-2xl bg-gradient-to-br from-indigo-500/[0.03] to-transparent relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-8">
+            <div className="p-3 bg-background border border-border rounded-2xl text-indigo-400 group-hover:scale-110 transition-transform">
+              <Timer size={20} strokeWidth={1} />
             </div>
             <div className="text-right">
-              <span className="text-[10px] font-bold text-white/40 uppercase">Est. Capital Runway</span>
+              <span className="text-[10px] font-bold text-muted uppercase">Est. Capital Runway</span>
               <p className="text-sm font-bold text-emerald-500 mt-1 uppercase">
                 {timeRange === 'monthly' ? 'Projected Path' : 'Short-term Stability'}
               </p>
             </div>
           </div>
-          <p className="text-4xl font-bold text-white tracking-tighter mb-4">
+          <p className="text-4xl font-bold text-primary tracking-tighter mb-4">
             {timeRange === 'monthly' ? '18.4 Months' : '72.8 Weeks'}
           </p>
-          <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+          <div className="w-full h-1.5 bg-background rounded-full overflow-hidden border border-border">
              <motion.div 
                key={timeRange}
                initial={{width: 0}} 
@@ -278,53 +281,53 @@ export default function Analytics() {
                transition={{duration: 2}} 
                className="h-full bg-indigo-500" />
           </div>
-          <p className="text-[10px] font-bold text-white/20 uppercase mt-4 leading-none">
+          <p className="text-[10px] font-bold text-muted-color uppercase mt-4 leading-none italic">
             {timeRange === 'monthly' ? 'Historical burn average' : 'Current week intensity'}
           </p>
         </div>
 
-        <div className="glass-panel p-8 rounded-2xl border border-white/5 bg-gradient-to-br from-emerald-500/[0.03] to-transparent relative overflow-hidden group">
-          <div className="flex justify-between items-start mb-12">
-            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-emerald-400 group-hover:scale-110 transition-transform">
-              <Calculator size={24} strokeWidth={1} />
+        <div className="glass-panel p-6 rounded-2xl bg-gradient-to-br from-emerald-500/[0.03] to-transparent relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-8">
+            <div className="p-3 bg-background border border-border rounded-2xl text-emerald-400 group-hover:scale-110 transition-transform">
+              <Calculator size={20} strokeWidth={1} />
             </div>
             <div className="text-right">
-              <span className="text-[10px] font-bold text-white/40 uppercase">Savings velocity</span>
+              <span className="text-[10px] font-bold text-muted uppercase">Savings velocity</span>
               <p className="text-sm font-bold text-indigo-400 mt-1 uppercase">+15.2% Accel</p>
             </div>
           </div>
-          <p className="text-4xl font-bold text-white tracking-tighter mb-4">$3,420.00 <span className="text-lg text-white/20">/mo</span></p>
-          <p className="text-[10px] font-bold text-white/20 uppercase leading-none mt-auto">Aggregated assets</p>
+          <p className="text-4xl font-bold text-primary tracking-tighter mb-4">$3,420.00 <span className="text-lg text-muted opacity-40">/mo</span></p>
+          <p className="text-[10px] font-bold text-muted uppercase leading-none mt-auto italic">Aggregated assets</p>
         </div>
 
-        <div className="glass-panel p-8 rounded-2xl border border-white/5 bg-gradient-to-br from-amber-500/[0.03] to-transparent relative overflow-hidden group">
-          <div className="flex justify-between items-start mb-12">
-            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-amber-400 group-hover:scale-110 transition-transform">
-              <ShieldCheck size={24} strokeWidth={1} />
+        <div className="glass-panel p-6 rounded-2xl bg-gradient-to-br from-amber-500/[0.03] to-transparent relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-8">
+            <div className="p-3 bg-background border border-border rounded-2xl text-amber-400 group-hover:scale-110 transition-transform">
+              <ShieldCheck size={20} strokeWidth={1} />
             </div>
             <div className="text-right">
-              <span className="text-[10px] font-bold text-white/40 uppercase">Confidence rating</span>
+              <span className="text-[10px] font-bold text-muted uppercase">Confidence rating</span>
               <p className="text-sm font-bold text-amber-400 mt-1 uppercase">Reliable Data</p>
             </div>
           </div>
-          <p className="text-4xl font-bold text-white tracking-tighter mb-4">98.2%</p>
+          <p className="text-4xl font-bold text-primary tracking-tighter mb-4">98.2%</p>
           <div className="flex gap-1.5 mt-auto">
              {[...Array(12)].map((_, i) => (
-               <div key={i} className={`h-1.5 flex-1 rounded-sm ${i < 10 ? 'bg-amber-500/60 shadow-[0_0_8px_rgba(245,158,11,0.3)]' : 'bg-white/5'}`} />
+                <div key={i} className={`h-1.5 flex-1 rounded-sm ${i < 10 ? 'bg-amber-500/60 shadow-[0_0_8px_rgba(245,158,11,0.3)]' : (isDark ? 'bg-white/5' : 'bg-black/5')}`} />
              ))}
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         <div className="xl:col-span-8">
-          <section id="analytics-grid" className="glass-panel p-5 sm:p-8 lg:p-10 rounded-2xl border border-white/5 bg-white/[0.01] relative overflow-visible">
-            <div className="relative z-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-10 px-0 sm:px-2">
+          <section id="analytics-grid" className="glass-panel p-5 sm:p-8 lg:p-8 rounded-2xl relative overflow-visible h-full">
+            <div className="relative z-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6 px-0 sm:px-2">
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight uppercase">{t('analytics.liquidityProjection', 'Liquidity Projection')}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-primary tracking-tight uppercase">{t('analytics.liquidityProjection', 'Liquidity Projection')}</h2>
                 <div className="flex items-center gap-3 mt-2">
-                  <span className="text-[10px] font-bold text-white/30 uppercase">{t('analytics.liveDataFeed', 'Live Data Feed')}</span>
-                  <div className="h-px w-10 bg-white/10" />
+                  <span className="text-[10px] font-bold text-muted uppercase">{t('analytics.liveDataFeed', 'Live Data Feed')}</span>
+                  <div className="h-px w-10 bg-border" />
                 </div>
               </div>
 
@@ -332,9 +335,9 @@ export default function Analytics() {
                 <div className="relative flex-1 sm:flex-none" ref={dropdownRef}>
                   <button 
                     onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(prev => prev === 'type' ? null : 'type'); }}
-                    className="flex items-center justify-between gap-3 px-4 py-3 bg-[#080808] border border-white/10 rounded-xl hover:border-white/30 transition-all w-full sm:min-w-[220px] shadow-2xl"
+                    className="flex items-center justify-between gap-3 px-4 py-3 bg-background border border-border rounded-xl hover:border-primary/30 transition-all w-full sm:min-w-[220px] shadow-2xl"
                   >
-                    <span className="text-[11px] font-bold uppercase text-white/90 truncate">
+                    <span className="text-[11px] font-bold uppercase text-primary">
                       {chartOptions.find(o => o.id === chartType)?.name}
                     </span>
                     <ChevronDown size={14} className={`text-indigo-400 transition-transform duration-500 shrink-0 ${isDropdownOpen === 'type' ? 'rotate-180' : ''}`} />
@@ -346,7 +349,7 @@ export default function Analytics() {
                         initial={{ opacity: 0, scale: 0.98, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.98, y: 10 }}
-                        className="absolute right-0 mt-3 w-full sm:w-64 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-[0_40px_80px_rgba(0,0,0,1)] z-[1100] py-3 overflow-hidden"
+                        className={`absolute right-0 mt-3 w-full sm:w-64 border border-border rounded-xl shadow-[0_40px_80px_rgba(0,0,0,0.5)] z-[1100] py-3 overflow-hidden ${isDark ? 'bg-[#0a0a0a]' : 'bg-white'}`}
                       >
                         {chartOptions.map((opt) => (
                           <div 
@@ -356,7 +359,7 @@ export default function Analytics() {
                               setChartType(opt.id); 
                               setIsDropdownOpen(null); 
                             }}
-                            className={`w-full flex items-center gap-4 px-6 py-4 text-left transition-all cursor-pointer ${chartType === opt.id ? 'bg-indigo-500 text-white' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                            className={`w-full flex items-center gap-4 px-6 py-4 text-left transition-all cursor-pointer ${chartType === opt.id ? 'bg-indigo-500 text-white' : 'text-muted hover:text-primary hover:bg-panel'}`}
                           >
                             <opt.icon size={16} strokeWidth={2} />
                             <span className="text-[11px] font-bold uppercase">{opt.name}</span>
@@ -366,14 +369,14 @@ export default function Analytics() {
                     )}
                   </AnimatePresence>
                 </div>
-                <button className="p-3 sm:p-4 bg-white/5 border border-white/10 rounded-xl text-white/30 hover:text-white transition-all shrink-0">
+                <button className="p-3 sm:p-4 bg-background border border-border rounded-xl text-muted hover:text-primary transition-all shrink-0">
                   <Maximize2 size={16} />
                 </button>
               </div>
             </div>
 
-            {/* Chart area — explicit height required for ResponsiveContainer */}
-            <div className="h-[280px] sm:h-[360px] lg:h-[460px] w-full relative z-10">
+            {/* Chart area — properly centered with flex padding */}
+            <div className="h-[280px] sm:h-[340px] lg:h-[400px] w-full relative z-10 flex flex-col justify-center pt-8 sm:pt-14 pb-4">
               <AnimatePresence mode="wait">
                 <motion.div 
                   key={chartType}
@@ -381,7 +384,7 @@ export default function Analytics() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.25 }}
-                  className="h-full w-full"
+                  className="w-full h-full"
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     {renderChart()}
@@ -392,30 +395,30 @@ export default function Analytics() {
           </section>
         </div>
 
-        <aside className="xl:col-span-4 space-y-10">
-          <div className="glass-panel p-10 rounded-2xl border border-white/5 bg-[#0b0b0b]">
-            <h3 className="text-[11px] font-bold text-white uppercase mb-12 pb-5 border-b border-white/5 flex justify-between items-center">
+        <aside className="xl:col-span-4 space-y-6">
+          <div className="glass-panel p-6 sm:p-10 rounded-2xl">
+            <h3 className="text-[11px] font-black text-primary uppercase mb-6 pb-4 border-b border-border flex justify-between items-center">
                {t('analytics.structuralDist', 'Structural Distribution')}
-               <LayoutGrid size={14} className="text-white/20" />
+               <LayoutGrid size={14} className="text-muted opacity-20" />
             </h3>
-            <div className="h-[320px]">
+            <div className="h-[280px] flex flex-col justify-center pt-6">
                <ResponsiveContainer width="100%" height="100%">
                   <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData.trend}>
-                    <PolarGrid stroke="rgba(255,255,255,0.05)" />
-                    <PolarAngleAxis dataKey="name" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 700 }} />
+                    <PolarGrid stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} />
+                    <PolarAngleAxis dataKey="name" tick={{ fill: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', fontSize: 10, fontWeight: 700 }} />
                     <Radar name="Liquidity" dataKey="income" stroke="#6366f1" strokeWidth={2} fill="#6366f1" fillOpacity={0.2} />
                     <Tooltip content={<CustomTooltip />} />
                   </RadarChart>
                </ResponsiveContainer>
             </div>
-            <div className="space-y-6 mt-12">
+            <div className="space-y-4 mt-8">
                {chartData.categories.slice(0, 4).map((cat, i) => (
                  <div key={i} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                        <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                       <span className="text-[10px] font-bold text-white/40 uppercase">{cat.name}</span>
+                       <span className="text-[10px] font-bold text-muted uppercase tracking-tight">{cat.name}</span>
                     </div>
-                    <span className="text-[10px] font-bold text-white uppercase tabular-nums">
+                    <span className="text-[10px] font-bold text-primary uppercase tabular-nums">
                       {Math.round((cat.value / chartData.trend.reduce((a, b) => a + b.expenses, 0)) * 100)}%
                     </span>
                  </div>
@@ -423,25 +426,25 @@ export default function Analytics() {
             </div>
           </div>
 
-          <div className="glass-panel p-10 rounded-2xl border border-white/5 bg-[#0b0b0b]">
-             <h3 className="text-[11px] font-bold text-white uppercase mb-10 flex items-center gap-4">
+          <div className="glass-panel p-8 sm:p-10 rounded-2xl">
+             <h3 className="text-[11px] font-black text-primary uppercase mb-6 flex items-center gap-4">
                 <Globe size={16} className="text-indigo-400" />
                 Regional insights
              </h3>
-             <div className="space-y-6">
+             <div className="space-y-4">
                 <div>
-                   <p className="text-[9px] font-bold text-white/30 uppercase mb-3 leading-none">Market Exposure</p>
+                   <p className="text-[9px] font-bold text-muted uppercase mb-3 leading-none italic">Market Exposure</p>
                    <div className="flex items-end gap-1 h-12">
                       {[15, 25, 45, 30, 60, 40, 75, 50, 90].map((h, i) => (
                         <motion.div 
                           key={i} 
                           initial={{height: 0}}
                           animate={{height: `${h}%`}}
-                          className="flex-1 bg-white/5 hover:bg-indigo-500/40 transition-colors" />
+                          className={`flex-1 ${isDark ? 'bg-white/5' : 'bg-black/5'} hover:bg-indigo-500/40 transition-colors`} />
                       ))}
                    </div>
                 </div>
-                <p className="text-[10px] text-white/40 leading-relaxed font-medium uppercase opacity-60">
+                <p className="text-[10px] text-muted leading-relaxed font-medium uppercase opacity-60 italic">
                    Real-time asset performance data synchronized across all operational sectors.
                 </p>
              </div>

@@ -6,107 +6,99 @@
 ## 💎 Project Overview
 **FinDash** is a high-performance, professional financial terminal designed for enterprise-grade data visualization and personal wealth management. Built with a "Terminal First" aesthetic, it prioritizes structured data, real-time intelligence flow, and an ultra-premium technical experience.
 
-The platform has been recently upgraded with **FinDash AI**, a context-aware assistant that provides deep analytical insights across every module of the application.
+The platform is powered by **FinDash AI**, a context-aware assistant providing deep analytical insights, and features a redundant **Zero-Backend Deterministic Data Architecture**.
 
 ---
 
-## 🔥 Key Intelligence Features
+## 🔥 Strategic functional Nodes (Key Features)
 
-### 1. 🤖 FinDash AI (Context-Aware Assistant)
+### 1. 🤖 FinDash AI (Deep Context Integration)
 A deeply integrated intelligent assistant that understands your entire financial ecosystem.
-- **Context-Aware**: Knows exactly which page you are viewing (Dashboard, Planner, or Analytics) and tailors its responses accordingly.
-- **Premium Structured Insights**: Delivers analysis using elite markdown formatting—replacing generic paragraphs with clear headings, data points, and strategic recommendations.
-- **Feature Deep-Dives**: Explains complex metrics like **Burn Rate**, **Surplus**, and **Savings Velocity** with technical precision.
+- **Context-Aware**: Understands exactly which module is active (Dashboard, Planner, or Analytics) and tailors its responses based on the live dataset.
+- **Natural Language Analysis**: Interpret your balance, top spending categories, and burn rate via simple chat queries.
 
-### 2. 🧭 AI-Guided Onboarding (Multi-Page Tour)
-A high-fidelity onboarding system designed to eliminate the learning curve for new users.
-- **Spotlight Navigation**: Strictly guides users through the sidebar modules using a dynamic spotlight effect.
-- **Technical Guidance**: Provides professional, sentence-cased descriptions of the brand's operational nodes.
-- **Intelligent Controls**: Full navigation control with Back, Next, Skip, and Finish functionality.
+### 2. 🛡️ Multi-Tier RBAC (Role-Based Access Control)
+Strict enforcement of operational permissions to simulate a secure enterprise environment:
+- **Admin Root Access**: Full CRUD capability on all transactions and budgets. Access to advanced analytics (Risk Radar, Burn Velocity).
+- **Viewer Mode**: A strictly read-only experience. Modifier functions are locked, and transaction data is truncated to protect core ledger privacy.
 
-### 3. 🧠 Financial Intelligence Hub (Advanced Planner)
-The core analytical engine of the application.
-- **Real-Time Calculations**: Instant derivation of fiscal health metrics including Burn Rate and surplus buffers.
-- **Flexible Vector Deployment**: Manage fixed allocations (Rent, Utilities) alongside variable sector flux (Transport, Leisure).
-- **Goal Synchronization**: Adjust inflow parameters to synchronize your financial trajectory with target benchmarks.
+### 3. 📊 Deterministic Data Architecture (100% Real-Time)
+- **Zero-Base Calibration**: All dashboard metrics (Total Balance, Income, Expenses) are derived 100% from the transaction history—no hardcoded starting balances.
+- **Real-Time Synthesis**: Every addition, deletion, or edit in the ledger propagates instantly across all charts and stat-cards.
+- **Analytics Integrity**: Radar Charts and Heatmaps now use deterministic frequency-hash algorithms instead of random generators, ensuring mathematical consistency.
 
-### 4. 📧 Intelligence Dispatch (Automated Reporting)
-Automated multi-metric financial synthesis delivered directly to your inbox.
-- **Deep Analytics**: Dispatches more than just totals—includes **Savings Rate**, **Burn Coefficient**, and **Category Concentration**.
-- **System Synchronization**: Dynamic state detection ensures reports reflect the exact real-time balance and transaction volume.
-- **Actionable Status**: Provides immediate feedback on whether the current fiscal vector is **Optimal** or requires **Caution**.
+### 4. 🧭 Intelligence Guided Onboarding
+- **Multi-Stage Walkthrough**: A high-fidelity spotlight navigation system that ensures new users achieve operational mastery across every functional node.
+
+### 5. 📧 Intelligence Dispatch & Multi-Format Synthesis
+- **Decoupled PDF Engine**: A stability-first architecture that renders a separate, simplified report template off-screen to ensure 100% PDF compatibility without modern CSS artifacts.
+- **Professional Filename Mapping**: Automated, unique, and enterprise-grade file naming (e.g., `FinDash_Intelligence_Dossier_[Timestamp].pdf`).
+- **High-Contrast Terminal Loading**: A professional terminal-style loading interface with vertically scanning laser effects and 95% opacity to ensure zero background interference.
+
+---
+
+## 🏛️ System Architecture
+
+### 📊 PDF synthesis Node (Stability-First)
+To solve the "Modern CSS vs Canvas" conflict:
+- **UI Node**: High-fidelity glassmorphism, `oklch` colors, and blur filters for the live user experience.
+- **Export Node**: A hidden, static HTML component with standard HEX/RGB colors and solid backgrounds. This ensures `html2canvas` captures a perfect, error-free snapshot every time.
+
+### 📈 Recharts Calibration
+- **Stability Wrappers**: Every visualization uses `ResponsiveContainer` wrapped in defensive `min-h` containers to prevent dimension-zero calculation errors during component mounting.
+- **Deterministic Metrics**: Radar charts map performance based on **Savings Rate**, **Stability**, **Diversity**, and **Activity Volume** instead of static mocks.
 
 ---
 
 ## 🛠️ Technology Stack
-- **Core**: React 19 + Vite (Next-Gen Build Tool)
-- **Styling**: Tailwind CSS v4 (Modern CSS Engine)
-- **Animations**: Framer Motion (Executive Micro-Interactions)
-- **AI Intelligence**: Groq SDK (Llama 3.3 70B Integration)
-- **Markdown Rendering**: React Markdown (SaaS-Level Data Structures)
-- **State Management**: Zustand (Global Context & Persistence)
-- **Internalization**: i18next (Full Multilingual Support)
--
+- **Framework**: React 19 + Vite
+- **Styling**: Tailwind CSS v4 (Modern Engine)
+- **State**: Zustand (Persistence & Store Architecture)
+- **Animation**: Framer Motion (Executive Micro-Interactions)
+- **Visualization**: Recharts (High-Fidelity SVG)
+- **AI Intelligence**: Groq SDK + Llama 3.3 70B
+- **Synthesis**: html2canvas + jsPDF + EmailJS
 
 ---
 
-## 🌊 Project Flow & Working
-1. **Terminal Access (Auth)**:
-   - Secure, glassmorphic login portal with identity validation.
-2. **AI-Guided Onboarding**:
-   - Automated product walkthrough ensuring immediate operational mastery.
-3. **Data Intelligence (FinDash AI)**:
-   - Discussing balance, top spending categories, and financial health directly through a structured intelligence interface.
-4. **Operations (Intelligence Hub)**:
-   - Currency-aware financial goal setting and real-time deficit/surplus analysis.
-5. **High-Fidelity Reporting**:
-   - One-click export of financial insights and transaction ledgers to high-resolution PNG or PDF formats.
-
----
-
-## 📂 Project Structure
+## 📂 Project Structure Map
 ```text
 zorvyn/finance-dashboard/
+├── public/                 # Static asset nodes
 ├── src/
 │   ├── components/
-│   │   ├── Chatbot/           # FinDash AI Intelligence Node
-│   │   ├── Onboarding/        # Guided Product Tour System
-│   │   ├── Layout/            # Sidebar, Topbar, DashboardLayout
-│   │   └── UI/                # Reusable Atomic Elements
-│   ├── store.js               # Global Zustand State Management (Persistence)
-│   └── App.jsx                # Router & Theme Registry
+│   │   ├── Chatbot/        # AI Intelligence Panel
+│   │   ├── Onboarding/     # Product Tour Logic Node
+│   │   ├── Layout/         # Sidebar, Topbar, Nav Components
+│   │   └── UI/             # Atomic glassmorphic components
+│   ├── lib/                # Technical utilities & formatting
+│   ├── locales/            # i18n Translation JSON (EN, HI, FR)
+│   ├── pages/              # Core Functional Nodes
+│   │   ├── Dashboard/      # Main Intel Hub
+│   │   ├── Analytics/      # Deep Matrix Analysis
+│   │   ├── Transactions/   # Ledger Management
+│   │   └── Planner/        # Fiscal Budgeting Node
+│   ├── store.js            # Unified State Architecture (Zustand)
+│   ├── App.jsx             # Router & Interface Registry
+│   └── main.jsx            # System Entry Point
+├── .env                    # System environment variables
+└── README.md               # Operations Manual
 ```
 
 ---
 
 ## 🚀 Installation & Deployment
 
-### 1. Requirements
-Ensure you have **Node.js 18+** installed.
-
-### 2. Local Setup
+1. **Node Environment**: Ensure Node.js 18+ is installed.
+2. **Sync**:
 ```bash
-# Clone the repository
 git clone https://github.com/SSanthoshKumar26/FinDash.git
-
-# Enter the project directory
 cd FinDash
-
-# Install the technical stack
 npm install
-
-# Initialize the development node
 npm run dev
 ```
 
 ---
 
-## 🌐 Connectivity
-- **Repository**: [https://github.com/SSanthoshKumar26/FinDash.git](https://github.com/SSanthoshKumar26/FinDash.git)
-- **Live Node**: [https://fin-dash-six-gamma.vercel.app/](https://fin-dash-six-gamma.vercel.app/)
-
----
-
 ## ⚖️ License
-This project is licensed under the MIT License.
-Designed & Engineered with ❤️ by Santhosh Kumar.
+MIT License. Designed & Engineered with ❤️ by **Santhosh Kumar**.

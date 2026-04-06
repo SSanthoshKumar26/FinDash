@@ -5,8 +5,9 @@ import {
   CheckCircle2, PieChart as PieIcon, ArrowRight, Zap, 
   Lightbulb, ShieldCheck, IndianRupee, ChevronDown, 
   LayoutGrid, Activity, DollarSign, Euro, Calculator,
-  BarChart3
+  BarChart3, Lock as LockIcon
 } from 'lucide-react';
+import { useStore } from '../store';
 import { useTranslation } from 'react-i18next';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, 
@@ -50,7 +51,7 @@ const MetricSection = ({ title, value, icon: Icon, colorClass, trend, status }) 
   </motion.div>
 );
 
-const CategoryRow = ({ name, budget, actual, onUpdate, formatValue, type }) => {
+const CategoryRow = ({ name, budget, actual, onUpdate, formatValue, type, disabled }) => {
   const percent = budget > 0 ? (actual / budget) * 100 : 0;
   const status = percent > 100 ? 'danger' : percent > 80 ? 'warning' : 'safe';
   
@@ -70,7 +71,8 @@ const CategoryRow = ({ name, budget, actual, onUpdate, formatValue, type }) => {
             type="number" 
             value={budget === 0 ? '' : budget}
             onChange={(e) => onUpdate(name, 'budget', e.target.value)}
-            className="w-full bg-black/20 border border-white/10 rounded-lg py-2.5 px-3 text-xs font-bold text-primary focus:border-indigo-500 outline-none transition-all placeholder:text-muted/30"
+            disabled={disabled}
+            className={`w-full bg-black/20 border border-white/10 rounded-lg py-2.5 px-3 text-xs font-bold text-primary focus:border-indigo-500 outline-none transition-all placeholder:text-muted/30 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             placeholder="0.00"
           />
         </div>
@@ -80,7 +82,8 @@ const CategoryRow = ({ name, budget, actual, onUpdate, formatValue, type }) => {
             type="number" 
             value={actual === 0 ? '' : actual}
             onChange={(e) => onUpdate(name, 'actual', e.target.value)}
-            className="w-full bg-black/20 border border-white/10 rounded-lg py-2.5 px-3 text-xs font-bold text-primary focus:border-indigo-500 outline-none transition-all placeholder:text-muted/30"
+            disabled={disabled}
+            className={`w-full bg-black/20 border border-white/10 rounded-lg py-2.5 px-3 text-xs font-bold text-primary focus:border-indigo-500 outline-none transition-all placeholder:text-muted/30 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             placeholder="0.00"
           />
         </div>
@@ -111,6 +114,8 @@ const CategoryRow = ({ name, budget, actual, onUpdate, formatValue, type }) => {
 
 export default function Planner() {
   const { t } = useTranslation();
+  const { role } = useStore();
+  const isAdmin = role === 'Admin';
   const [currency, setCurrency] = useState('USD');
   const [prevCurrency, setPrevCurrency] = useState('USD');
 
@@ -195,7 +200,14 @@ export default function Planner() {
            </div>
            <div>
               <h1 className="text-3xl font-black tracking-tighter text-primary uppercase font-sans">Financial Intelligence Hub</h1>
-              <p className="text-muted text-[10px] font-black uppercase tracking-[0.3em] font-sans">Real-time Fiscal Control Center</p>
+              <div className="flex items-center gap-3 mt-1">
+                 <p className="text-muted text-[10px] font-black uppercase tracking-[0.3em] font-sans">Real-time Fiscal Control Center</p>
+                 {!isAdmin && (
+                   <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[8px] font-black uppercase tracking-widest animate-pulse">
+                      <LockIcon size={10} /> READ ONLY MODE
+                   </div>
+                 )}
+              </div>
            </div>
         </div>
 
@@ -227,7 +239,8 @@ export default function Planner() {
                      type="number"
                      value={incomeVal === 0 ? '' : incomeVal}
                      onChange={(e) => setIncomeVal(parseFloat(e.target.value) || 0)}
-                     className="w-full bg-black/20 border border-white/10 rounded-lg py-4 pl-16 pr-5 text-2xl font-black tracking-tight text-primary focus:border-primary outline-none transition-all placeholder:text-muted/10 font-sans"
+                     disabled={!isAdmin}
+                     className={`w-full bg-black/20 border border-white/10 rounded-lg py-4 pl-16 pr-5 text-2xl font-black tracking-tight text-primary focus:border-primary outline-none transition-all placeholder:text-muted/10 font-sans ${!isAdmin ? 'opacity-50 cursor-not-allowed' : ''}`}
                      placeholder="0.00"
                   />
                </div>
@@ -242,7 +255,8 @@ export default function Planner() {
                      type="number"
                      value={goalVal === 0 ? '' : goalVal}
                      onChange={(e) => setGoalVal(parseFloat(e.target.value) || 0)}
-                     className="w-full bg-black/20 border border-white/10 rounded-lg py-4 pl-16 pr-5 text-2xl font-black tracking-tight text-primary focus:border-primary outline-none transition-all placeholder:text-muted/10 font-sans"
+                     disabled={!isAdmin}
+                     className={`w-full bg-black/20 border border-white/10 rounded-lg py-4 pl-16 pr-5 text-2xl font-black tracking-tight text-primary focus:border-primary outline-none transition-all placeholder:text-muted/10 font-sans ${!isAdmin ? 'opacity-50 cursor-not-allowed' : ''}`}
                      placeholder="0.00"
                   />
                </div>
@@ -268,7 +282,7 @@ export default function Planner() {
             </div>
             <div className="flex flex-col">
                {Object.entries(fixedData).map(([name, data]) => (
-                  <CategoryRow key={name} name={name} {...data} onUpdate={handleUpdate(setFixedData)} formatValue={formatValue} type="fixed" />
+                  <CategoryRow key={name} name={name} {...data} onUpdate={handleUpdate(setFixedData)} formatValue={formatValue} type="fixed" disabled={!isAdmin} />
                ))}
             </div>
             
@@ -280,7 +294,7 @@ export default function Planner() {
             </div>
             <div className="flex flex-col">
                {Object.entries(variableData).map(([name, data]) => (
-                  <CategoryRow key={name} name={name} {...data} onUpdate={handleUpdate(setVariableData)} formatValue={formatValue} type="variable" />
+                  <CategoryRow key={name} name={name} {...data} onUpdate={handleUpdate(setVariableData)} formatValue={formatValue} type="variable" disabled={!isAdmin} />
                ))}
             </div>
          </div>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useStore } from '../store';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, Plus, Edit2, Trash2, X, Check, AlertCircle } from 'lucide-react';
+import { Search, Filter, Plus, Edit2, Trash2, X, Check, AlertCircle, Lock as LockIcon, ChevronUp, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +10,8 @@ export default function Transactions() {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTx, setEditingTx] = useState(null);
   
@@ -21,9 +23,40 @@ export default function Transactions() {
     date: new Date().toISOString().split('T')[0]
   });
 
-  const filteredData = transactions
+  let filteredData = [...transactions]
     .filter(tx => tx.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter(tx => filterType === 'All' ? true : tx.type === filterType.toLowerCase());
+    .filter(tx => filterType === 'All' ? true : tx.type === filterType.toLowerCase())
+    .filter(tx => categoryFilter === 'All' ? true : tx.category === categoryFilter);
+
+  if (sortConfig.key) {
+    filteredData.sort((a, b) => {
+      let aVal = a[sortConfig.key];
+      let bVal = b[sortConfig.key];
+      if (sortConfig.key === 'amount') {
+        aVal = Math.abs(a.amount);
+        bVal = Math.abs(b.amount);
+      } else if (sortConfig.key === 'date') {
+        aVal = new Date(a.date).getTime();
+        bVal = new Date(b.date).getTime();
+      }
+      
+      if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  if (role !== 'Admin') {
+    filteredData = filteredData.slice(0, 7);
+  }
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
 
   const handleDelete = (id) => {
     deleteTransaction(id);
@@ -71,12 +104,14 @@ export default function Transactions() {
           <p className="text-muted text-xs font-semibold uppercase tracking-widest opacity-70">{t('transactions.subtitle', 'High Performance Transaction Engine')}</p>
         </div>
         
-        <button 
-          onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-background font-semibold text-xs transition-all hover:opacity-90 rounded-md shadow-sm"
-        >
-          <Plus size={16} strokeWidth={2.5} /> {t('transactions.newEntry', 'New Entry')}
-        </button>
+        {role === 'Admin' && (
+          <button 
+            onClick={() => handleOpenModal()}
+            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-background font-semibold text-xs transition-all hover:opacity-90 rounded-md shadow-sm"
+          >
+            <Plus size={16} strokeWidth={2.5} /> {t('transactions.newEntry', 'New Entry')}
+          </button>
+        )}
       </div>
 
       <div id="transactions-table" className="glass-panel overflow-hidden mt-8 border-border rounded-xl">
@@ -102,6 +137,19 @@ export default function Transactions() {
               <option value="Income">{t('transactions.filterInflow', 'Inflow')}</option>
               <option value="Expense">{t('transactions.filterOutflow', 'Outflow')}</option>
             </select>
+            <select 
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="bg-background border border-border rounded-md px-4 py-2 text-xs font-semibold text-primary focus:outline-none focus:border-border cursor-pointer w-full sm:w-auto shadow-inner uppercase tracking-wider"
+            >
+              <option value="All">All Categories</option>
+              <option value="Food">Food</option>
+              <option value="Rent">Rent</option>
+              <option value="Travel">Travel</option>
+              <option value="Subscriptions">Subscription</option>
+              <option value="Others">Others</option>
+              <option value="Income">Income</option>
+            </select>
             <button className="p-2.5 bg-background border border-border rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-muted hover:text-primary shadow-inner">
               <Filter size={16} />
             </button>
@@ -112,10 +160,20 @@ export default function Transactions() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-100/50 dark:bg-white/10 text-muted uppercase text-[10px] font-black tracking-widest border-b border-border shadow-sm">
-                <th className="p-5">{t('transactions.colTimestamp', 'Timestamp')}</th>
+                <th className="p-5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors" onClick={() => handleSort('date')}>
+                  <div className="flex items-center gap-1">
+                    {t('transactions.colTimestamp', 'Timestamp')}
+                    {sortConfig.key === 'date' && (sortConfig.direction === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)}
+                  </div>
+                </th>
                 <th className="p-5">{t('transactions.colEntity', 'Entity')}</th>
                 <th className="p-5">{t('transactions.colVector', 'Vector Class')}</th>
-                <th className="p-5 text-right">{t('transactions.colValue', 'Value')}</th>
+                <th className="p-5 text-right cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors" onClick={() => handleSort('amount')}>
+                  <div className="flex items-center justify-end gap-1">
+                    {sortConfig.key === 'amount' && (sortConfig.direction === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)}
+                    {t('transactions.colValue', 'Value')}
+                  </div>
+                </th>
                 <th className="p-5 text-right">{t('transactions.colOps', 'Operations')}</th>
               </tr>
             </thead>
@@ -141,21 +199,44 @@ export default function Transactions() {
                       {tx.type === 'income' ? '+' : '-'}${Math.abs(tx.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </td>
                     <td className="p-5 text-right flex justify-end gap-2">
-                        <button 
-                          onClick={() => handleOpenModal(tx)}
-                          className="p-2 text-muted hover:text-primary border border-transparent hover:border-border rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition-all outline-none"
-                        >
-                          <Edit2 size={14} />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(tx.id)}
-                          className="p-2 text-rose-500/80 hover:text-rose-600 dark:text-rose-500/60 dark:hover:text-rose-400 border border-transparent hover:border-rose-500/20 rounded-md hover:bg-rose-500/5 transition-all outline-none"
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                        {role === 'Admin' ? (
+                          <>
+                            <button 
+                              onClick={() => handleOpenModal(tx)}
+                              className="p-2 text-muted hover:text-primary border border-transparent hover:border-border rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition-all outline-none"
+                            >
+                              <Edit2 size={14} />
+                            </button>
+                            <button 
+                              onClick={() => handleDelete(tx.id)}
+                              className="p-2 text-rose-500/80 hover:text-rose-600 dark:text-rose-500/60 dark:hover:text-rose-400 border border-transparent hover:border-rose-500/20 rounded-md hover:bg-rose-500/5 transition-all outline-none"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </>
+                        ) : (
+                          <span className="p-2 text-[10px] font-bold uppercase tracking-widest text-muted/40 border border-border/50 rounded-md bg-black/5 dark:bg-white/5 flex items-center gap-1.5 opacity-60">
+                            <LockIcon size={10} /> {t('transactions.readOnly', 'Read Only')}
+                          </span>
+                        )}
                       </td>
                   </motion.tr>
                 ))}
+                {filteredData.length === 0 && (
+                  <motion.tr 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <td colSpan="5" className="p-12 text-center">
+                      <div className="flex flex-col items-center justify-center text-muted/50">
+                        <Search size={32} className="mb-4 opacity-50" />
+                        <p className="text-sm font-bold uppercase tracking-widest text-primary/60 mb-1">No transactions found</p>
+                        <p className="text-xs">Try adjusting filters or add a new transaction</p>
+                      </div>
+                    </td>
+                  </motion.tr>
+                )}
               </AnimatePresence>
             </tbody>
           </table>

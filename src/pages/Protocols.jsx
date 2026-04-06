@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { 
   Shield, Activity, Send, Wallet, PieChart, 
   Landmark, FileCheck, LandmarkIcon, ClipboardList,
-  Zap, Globe, Database, Lock, BarChart3, Bell,
+  Zap, Globe, Database, Lock as LockIcon, BarChart3, Bell,
   Cpu, Workflow, Fingerprint, Layers
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
